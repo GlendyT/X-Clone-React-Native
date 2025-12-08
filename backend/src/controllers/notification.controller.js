@@ -35,3 +35,4 @@ export const deleteNotification = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "Notification deleted succesfully" });
 });
+  
