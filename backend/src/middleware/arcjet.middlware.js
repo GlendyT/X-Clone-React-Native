@@ -8,7 +8,8 @@ export const arcjetMiddleware = async (req, res, next) => {
       requested: 1, // each request consumes 1 token
     });
 
-    // handledenied requests
+    // Arcjet automatically overrides DRY_RUN denials to ALLOW
+    // So we only need to check isDenied() - DRY_RUN rules won't trigger this
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
         return res.status(429).json({
@@ -28,21 +29,10 @@ export const arcjetMiddleware = async (req, res, next) => {
       }
     }
 
-    // check for spoofed bots
-    if (
-      decision.results.some(
-        (result) => result.reason.isBot() && result.reason.isSpoofed()
-      )
-    ) {
-      return res.status(403).json({
-        error: "Spoofed bot detected",
-        message: "Malicious bot activity detected.",
-      });
-    }
     next();
   } catch (error) {
     console.error("Arcjet middleware error:", error);
-    // allow request to confinue if Arcjet fails
+    // allow request to continue if Arcjet fails
     next();
   }
 };

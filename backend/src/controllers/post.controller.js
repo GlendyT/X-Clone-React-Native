@@ -7,8 +7,8 @@ import Notification from "../models/notification.model.js";
 import Comment from "../models/comment.model.js"
 
 export const getPosts = asyncHandler(async (req, res) => {
-  const posts = (await Post.find())
-    .toSorted({ createdAt: -1 })
+  const posts = await Post.find()
+    .sort({ createdAt: -1 })
     .populate("user", "username firstName lastName profilePicture")
     .populate({
       path: "comments",

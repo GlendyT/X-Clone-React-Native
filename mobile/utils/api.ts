@@ -1,8 +1,12 @@
 import axios, { AxiosInstance } from "axios";
 import { useAuth } from "@clerk/clerk-expo";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL  ;
-
+// Physical Device: Use computer's local IP address
+// Android Emulator: Use 10.0.2.2
+// iOS Simulator: Use localhost
+// localhost api would not work on your physical device
+//const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://x-clone-react-native-ashy.vercel.app/api";
+const API_BASE_URL = "http://localhost:5001/api";
 
 // this will basically create an authenticated api, pass the token into our headers
 export const createApiClient = (
@@ -14,7 +18,8 @@ export const createApiClient = (
     const token = await getToken();
 
     if (token) {
-      config.headers.Authorization = ` Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
     }
     return config;
   });
@@ -32,4 +37,21 @@ export const userApi = {
   getCurrentUser: (api: AxiosInstance) => api.get("/users/me"),
   updateProfile: (api: AxiosInstance, data: any) =>
     api.put("/users/profile", data),
+};
+
+export const postApi = {
+  createPost: (api: AxiosInstance, data: { content: string; image?: string }) =>
+    api.post("/posts", data),
+  getPosts: (api: AxiosInstance) => api.get("/posts"),
+  getUserPosts: (api: AxiosInstance, username: string) =>
+    api.get(`/posts/user/${username}`),
+  likePost: (api: AxiosInstance, postId: string) =>
+    api.post(`/posts/${postId}/like`),
+  deletePost: (api: AxiosInstance, postId: string) =>
+    api.delete(`/posts/${postId}`),
+};
+
+export const commentApi = {
+  createComment: (api: AxiosInstance, postId: string, content: string) =>
+    api.post(`/comments/post/${postId}`, { content }),
 };
