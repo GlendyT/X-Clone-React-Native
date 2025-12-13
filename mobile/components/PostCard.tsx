@@ -4,7 +4,6 @@ import {
   Alert,
   Image,
   TouchableOpacity,
-  Touchable,
 } from "react-native";
 import React from "react";
 import { Post, User } from "@/types";
