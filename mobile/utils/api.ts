@@ -1,12 +1,12 @@
 import axios, { AxiosInstance } from "axios";
 import { useAuth } from "@clerk/clerk-expo";
 
-// Physical Device: Use computer's local IP address
+// Physical Device with USB (adb reverse): Use localhost
 // Android Emulator: Use 10.0.2.2
 // iOS Simulator: Use localhost
-// localhost api would not work on your physical device
+// When using adb reverse, localhost works on physical device via USB tunnel
 //const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://x-clone-react-native-ashy.vercel.app/api";
-const API_BASE_URL = "http://192.168.1.135:5001/api";
+const API_BASE_URL = "http://localhost:5001/api";
 
 // this will basically create an authenticated api, pass the token into our headers
 export const createApiClient = (

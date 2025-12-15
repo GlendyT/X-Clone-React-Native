@@ -6,7 +6,7 @@ import { Post } from "@/types";
 import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
 
-const PostsList = () => {
+const PostsList = ({ username }: { username?: string }) => {
   const { currentUser } = useCurrentUser();
   const {
     posts,
@@ -16,9 +16,11 @@ const PostsList = () => {
     toggleLike,
     deletePost,
     checkIsLiked,
-  } = usePosts();
+  } = usePosts(username);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const selectedPost = selectedPostId ? posts.find((p:Post) => p._id === selectedPostId) : null
+  const selectedPost = selectedPostId
+    ? posts.find((p: Post) => p._id === selectedPostId)
+    : null;
 
   if (isLoading) {
     return (
@@ -59,13 +61,16 @@ const PostsList = () => {
           post={post}
           onLike={toggleLike}
           onDelete={deletePost}
-          onComment = {(post:Post) => setSelectedPostId(post._id)}
+          onComment={(post: Post) => setSelectedPostId(post._id)}
           currentUser={currentUser}
           isLiked={checkIsLiked(post.likes, currentUser)}
         />
       ))}
 
-      <CommentsModal selectedPost={selectedPost} onClose={() => setSelectedPostId(null)} />
+      <CommentsModal
+        selectedPost={selectedPost}
+        onClose={() => setSelectedPostId(null)}
+      />
     </>
   );
 };
