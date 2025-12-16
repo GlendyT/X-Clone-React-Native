@@ -4,6 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient, userApi } from "@/utils/api";
 import { useCurrentUser } from "./useCurrentUser";
 
+interface ProfileUpdateData {
+  firstName: string;
+  lastName: string;
+  bio: string;
+  location: string;
+}
+
 export const useProfile = () => {
   const api = useApiClient();
 
@@ -19,7 +26,8 @@ export const useProfile = () => {
   const { currentUser } = useCurrentUser();
 
   const updateProfileMutation = useMutation({
-    mutationFn: (profileData: any) => userApi.updateProfile(api, profileData),
+    mutationFn: (profileData: ProfileUpdateData) =>
+      userApi.updateProfile(api, profileData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
       setIsEditModalVisible(false);
