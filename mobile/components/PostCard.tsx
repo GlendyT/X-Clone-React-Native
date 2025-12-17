@@ -1,14 +1,9 @@
-import {
-  View,
-  Text,
-  Alert,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Alert, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 interface PostCardProps {
   post: Post;
@@ -24,12 +19,15 @@ const PostCard = ({
   onLike,
   onDelete,
   isLiked,
-  currentUser,onComment
+  currentUser,
+  onComment,
 }: PostCardProps) => {
   const isOwnPost = post.user._id === currentUser._id;
 
+  const router = useRouter();
+
   const handleDelete = () => {
-    Alert.alert("Delete post", "Are you sure you want to delte this post?", [
+    Alert.alert("Delete post", "Are you sure you want to delete this post?", [
       {
         text: "Cancel",
         style: "cancel",
@@ -41,17 +39,31 @@ const PostCard = ({
       },
     ]);
   };
+
+  const handleProfilePress = () => {
+    if (isOwnPost) {
+      router.push("/(tabs)/profile");
+    } else {
+      router.push(`/profile/${post.user._id}` as any);
+    }
+  };
+
   return (
     <View className="border-b border-gray-100 bg-white">
       <View className="flex-row p-4">
-        <Image
-          source={{ uri: post.user.profilePicture || "" }}
-          className="w-12 h-12 rounded-full mr-3"
-        />
+        <TouchableOpacity onPress={handleProfilePress}>
+          <Image
+            source={{ uri: post.user.profilePicture || "" }}
+            className="w-12 h-12 rounded-full mr-3"
+          />
+        </TouchableOpacity>
 
         <View className="flex-1">
           <View className="flex-row items-center justify-between mb-1">
-            <View className="flex-row items-center">
+            <TouchableOpacity
+              onPress={handleProfilePress}
+              className="flex-row items-center"
+            >
               <Text className="font-bold text-gray-900 mr-1">
                 {post.user.firstName} {post.user.lastName}
               </Text>
@@ -59,7 +71,8 @@ const PostCard = ({
               <Text className="font-bold text-gray-500 ">
                 @{post.user.username} * {formatDate(post.createdAt)}
               </Text>
-            </View>
+            </TouchableOpacity>
+
             {isOwnPost && (
               <TouchableOpacity onPress={handleDelete}>
                 <Feather name="trash" size={20} color={"#657786"} />

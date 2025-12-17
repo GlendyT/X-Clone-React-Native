@@ -11,7 +11,7 @@ import { useAuth } from "@clerk/clerk-expo";
 const getApiUrl = () => {
   // If you're using Android Emulator, uncomment this:
   // if (Platform.OS === "android") return "http://10.0.2.2:5001/api";
-  
+
   // For iOS Simulator or physical device with adb reverse:
   return "http://localhost:5001/api";
 };
@@ -47,6 +47,9 @@ export const userApi = {
   getCurrentUser: (api: AxiosInstance) => api.get("/users/me"),
   updateProfile: (api: AxiosInstance, data: any) =>
     api.put("/users/profile", data),
+  getUserById: (api: AxiosInstance, id: string) => api.get(`/users/${id}`),
+  followUser: (api: AxiosInstance, targetUserId: string) =>
+    api.post(`/users/follow/${targetUserId}`),
 };
 
 export const postApi = {
