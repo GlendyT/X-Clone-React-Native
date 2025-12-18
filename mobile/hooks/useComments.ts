@@ -30,10 +30,56 @@ export const useComments = () => {
     },
   });
 
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      await commentApi.deleteComment(api, commentId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error) => {
+      Alert.alert("Error", "Failed to delete comment");
+    },
+  });
+
+  const toggleLikeMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      await commentApi.toggleLikeComment(api, commentId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {
+      Alert.alert("Error", "Failed to like comment");
+    },
+  });
+
+  const deleteComment = (commentId: string) => {
+    Alert.alert(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteCommentMutation.mutate(commentId),
+        },
+      ]
+    );
+  };
+
+  const toggleLikeComment = (commentId: string) => {
+    toggleLikeMutation.mutate(commentId);
+  };
+
   const createComment = (postId: string) => {
     if (!commentText.trim()) {
       Alert.alert("Empty Comment", "Please write something before posting!");
-      return
+      return;
     }
 
     createCommentMutation.mutate({ postId, content: commentText.trim() });
@@ -43,6 +89,9 @@ export const useComments = () => {
     commentText,
     setCommentText,
     createComment,
-    isCreatingComment: createCommentMutation.isPending
+    isCreatingComment: createCommentMutation.isPending,
+    deleteComment,
+    isDeletingComment: deleteCommentMutation.isPending,
+    toggleLikeComment,
   };
 };
