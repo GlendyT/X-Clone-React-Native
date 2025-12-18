@@ -3,13 +3,18 @@ import { Alert } from "react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient, userApi } from "@/utils/api";
 import { useCurrentUser } from "./useCurrentUser";
+import * as ImagePicker from 'expo-image-picker';
 
-interface ProfileUpdateData {
+interface ProfileData {
   firstName: string;
   lastName: string;
   bio: string;
   location: string;
+  profilePicture: string;
+  bannerImage: string;
 }
+
+type ProfileUpdateData = Partial<ProfileData>;
 
 export const useProfile = () => {
   const api = useApiClient();
@@ -57,6 +62,32 @@ export const useProfile = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const pickImage = async (type: "profile" | "banner") => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: type === "profile" ? [1, 1] : [16, 9],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const imageData =
+        type === "profile"
+          ? { profilePicture: result.assets[0].uri }
+          : { bannerImage: result.assets[0].uri };
+
+      updateProfileMutation.mutate(imageData);
+    }
+  };
+
+  const updateProfileImage = (imageUri: string) => {
+    updateProfileMutation.mutate({ profilePicture: imageUri });
+  };
+
+  const updateBannerImage = (imageUri: string) => {
+    updateProfileMutation.mutate({ bannerImage: imageUri });
+  };
+
   return {
     isEditModalVisible,
     formData,
@@ -66,5 +97,8 @@ export const useProfile = () => {
     updateFormField,
     isUpdating: updateProfileMutation.isPending,
     refetch: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+    pickImage,
+    updateProfileImage,
+    updateBannerImage,
   };
 };

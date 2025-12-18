@@ -91,7 +91,7 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
           {selectedPost.comments?.map((comment) => (
             <View
               key={comment._id}
-              className="border-b border-gray-100 bg-white p-4"
+              className="border-b border-gray-100 bg-white p-4 flex-1"
             >
               {selectedPost.comments && selectedPost.comments.length > 0 ? (
                 <View className="flex-row">
@@ -124,6 +124,44 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
                     <Text className="text-gray-900 text-base leading-5 mb-2">
                       {comment.content}
                     </Text>
+
+                    <View className="flex-row items-center justify-between max-w-xs ">
+                      <TouchableOpacity>
+                        <Feather
+                          name="message-circle"
+                          size={18}
+                          color={"#657786"}
+                        />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity className="flex-row items-center">
+                        <Feather name="repeat" size={18} color={"#657786"} />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        className="flex flex-row items-center gap-1"
+                        onPress={() => toggleLikeComment(comment._id)}
+                      >
+                        <Ionicons
+                          name={
+                            comment.likes?.includes(currentUser?._id)
+                              ? "heart"
+                              : "heart-outline"
+                          }
+                          size={16}
+                          color={
+                            comment.likes?.includes(currentUser?._id)
+                              ? "#ef4444"
+                              : "#6b7280"
+                          }
+                        />
+                        {comment.likes.length > 0 && (
+                          <Text className="text-xs text-gray-500 ml-1">
+                            {comment.likes.length}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               ) : (
@@ -131,32 +169,6 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
                   <Text className="text-gray-500 ">No comments yet</Text>
                 </View>
               )}
-              <View className="flex-row justify-between max-w-xs">
-                <TouchableOpacity>
-                  <Feather name="message-circle" size={18} color={"#657786"} />
-                </TouchableOpacity>
-
-                <TouchableOpacity className="flex-row items-center">
-                  <Feather name="repeat" size={18} color={"#657786"} />
-                  
-                </TouchableOpacity>
-
-
-                <TouchableOpacity
-                 className="flex flex-row items-center gap-1"
-                 onPress={() => toggleLikeComment(comment._id)}
-                >
-
-                  <Ionicons
-                   name={comment.likes?.includes(currentUser?._id) ? "heart" : "heart-outline" } size={16} color={comment.likes?.includes(currentUser?._id) ? "#ef4444" : "#6b7280"}
-                  />
-                  {comment.likes.length > 0 && (
-                    <Text className="text-xs text-gray-500 ml-1">
-                      {comment.likes.length}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </View>
             </View>
           ))}
 

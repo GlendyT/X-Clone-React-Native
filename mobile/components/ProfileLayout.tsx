@@ -23,6 +23,10 @@ interface ProfileLayoutProps {
   headerRight?: React.ReactNode;
   actionButton?: React.ReactNode;
   children: React.ReactNode;
+  canEdit?: boolean;
+  onEditBanner?: () => void;
+  onEditProfile?: () => void;
+  isUpdating?: boolean;
 }
 
 const ProfileLayout = ({
@@ -32,6 +36,10 @@ const ProfileLayout = ({
   headerLeft,
   headerRight,
   actionButton,
+  canEdit,
+  onEditBanner,
+  onEditProfile,
+  isUpdating,
   children,
 }: ProfileLayoutProps) => {
   const insets = useSafeAreaInsets();
@@ -69,24 +77,46 @@ const ProfileLayout = ({
         }
       >
         {/*BANNER */}
-        <Image
-          source={{
-            uri:
-              user.bannerImage ||
-              "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
-          }}
-          className="w-full h-48"
-          resizeMode="cover"
-        />
+        <View className="relative">
+          <Image
+            source={{
+              uri:
+                user.bannerImage ||
+                "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
+            }}
+            className="w-full h-48"
+            resizeMode="cover"
+          />
+          {canEdit && (
+            <TouchableOpacity
+              className="absolute top-4 right-4  bg-black/50 p-2 rounded-full"
+              onPress={onEditBanner}
+              disabled={isUpdating}
+            >
+              <Feather name="camera" size={20} color="white" />
+            </TouchableOpacity>
+          )}
+        </View>
 
         <View className="px-4 pb-4 border-b border-gray-100">
           <View className="flex-row justify-between items-end -mt-16 mb-4">
-            <Image
-              source={{
-                uri: user.profilePicture || "default-avatar-url",
-              }}
-              className="w-32 h-32 rounded-full border-4 border-white"
-            />
+            <View className="relative">
+              <Image
+                source={{
+                  uri: user.profilePicture || "default-avatar-url",
+                }}
+                className="w-32 h-32 rounded-full border-4 border-white"
+              />
+              {canEdit && (
+                <TouchableOpacity
+                  className="absolute bottom-2 right-2 bg-blue-500 p-2 rounded-full"
+                  onPress={onEditProfile}
+                  disabled={isUpdating}
+                >
+                  <Feather name="camera" size={16} color={"white"} />
+                </TouchableOpacity>
+              )}
+            </View>
             {actionButton}
           </View>
 
