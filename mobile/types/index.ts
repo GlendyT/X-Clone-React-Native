@@ -17,7 +17,7 @@ export interface Comment {
   content: string;
   createdAt: string;
   user: User;
-  likes: string[]
+  likes: string[];
 }
 
 export interface Post {
@@ -28,6 +28,9 @@ export interface Post {
   user: User;
   likes: string[];
   comments: Comment[];
+  isRepost?: boolean;
+  originalPost?: Post;
+  repostedBy?: User[];
 }
 
 export interface Notification {
@@ -39,7 +42,7 @@ export interface Notification {
     profilePicture?: string;
   };
   to: string;
-  type: "like" | "comment" | "follow";
+  type: "like" | "comment" | "follow" | "repost";
   post?: {
     _id: string;
     content: string;

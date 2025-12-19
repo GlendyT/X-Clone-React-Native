@@ -1,9 +1,10 @@
 import { View, Text, Alert, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useRepost } from "@/hooks/useReposts";
 
 interface PostCardProps {
   post: Post;
@@ -23,6 +24,15 @@ const PostCard = ({
   onComment,
 }: PostCardProps) => {
   const isOwnPost = post.user._id === currentUser._id;
+  const { repost, isReposting } = useRepost();
+
+  const hasReposted = useMemo(() => {
+    const result =
+      post.repostedBy?.some(
+        (user) => user._id.toString() === currentUser._id.toString()
+      ) || false;
+    return result;
+  }, [post.repostedBy, currentUser._id]);
 
   const router = useRouter();
 
@@ -105,9 +115,21 @@ const PostCard = ({
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex-row items-center">
-              <Feather name="repeat" size={18} color={"#657786"} />
-              <Text className="text-gray-500 text-sm ml-2">0</Text>
+            <TouchableOpacity
+              className="flex-row items-center"
+              onPress={() => repost(post._id)}
+              disabled={isReposting}
+            >
+              <Feather
+                name="repeat"
+                size={18}
+                color={hasReposted ? "#1DA1F2" : "#657786"}
+              />
+              <Text
+                className={`text-sm ml-2 ${hasReposted ? "text-blue-500" : "text-gray-500"}`}
+              >
+                {formatNumber(post.repostedBy?.length || 0)}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity

@@ -4,14 +4,22 @@ import User from "../models/user.model.js";
 import { getAuth } from "@clerk/express";
 import cloudinary from "../config/claudinary.js";
 import Notification from "../models/notification.model.js";
-import Comment from "../models/comment.model.js"
+import Comment from "../models/comment.model.js";
 
 export const getPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find()
     .sort({ createdAt: -1 })
     .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username firstName lastName profilePicture")
     .populate({
       path: "comments",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    })
+    .populate({
+      path: "originalPost",
       populate: {
         path: "user",
         select: "username firstName lastName profilePicture",
@@ -48,8 +56,16 @@ export const getUserPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find({ user: user._id })
     .sort({ createdAt: -1 })
     .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username firstName lastName profilePicture")
     .populate({
       path: "comments",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    })
+    .populate({
+      path: "originalPost",
       populate: {
         path: "user",
         select: "username firstName lastName profilePicture",
@@ -171,4 +187,70 @@ export const deletePost = asyncHandler(async (req, res) => {
   await Post.findByIdAndDelete(postId);
 
   res.status(200).json({ message: "Post delete successfully" });
+});
+
+//funcionalidad de repostear
+export const repostPost = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { postId } = req.params;
+
+  //verificar que el post original existe
+  const originalPost = await Post.findById(postId);
+  if (!originalPost) {
+    return res.status(404).json({ error: "Post not found" });
+  }
+
+  // verificar que el usuario existe
+  const user = await User.findOne({ clerkId: userId });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  //verificar que no sea su propio post
+  if (originalPost.user.toString() === user._id.toString()) {
+    return res.status(400).json({ error: "Cannot repost your own post" });
+  }
+
+  // verificar que no haya reposteado ya
+  const hasReposted = originalPost.repostedBy.includes(user._id);
+
+  if (hasReposted) {
+    //eliminar el post de repost del usuario
+    await Post.findOneAndDelete({
+      user: user._id,
+      isRepost: true,
+      originalPost: postId,
+    });
+    //si ya existe, eliminarlo (toggle)
+    await Post.findByIdAndUpdate(postId, {
+      $pull: { repostedBy: user._id },
+    });
+    return res.status(200).json({ message: "Repost removed successfully" });
+  }
+
+  //crear el repost
+  const repost = await Post.create({
+    user: user._id,
+    isRepost: true,
+    originalPost: postId,
+  });
+
+  // agregar el repost al post original
+  await Post.findByIdAndUpdate(postId, {
+    $push: { repostedBy: user._id },
+  });
+
+  console.log(user._id);
+
+  // crear notificacion si no es su propio post
+  if (originalPost.user.toString() !== user._id.toString()) {
+    await Notification.create({
+      from: user._id,
+      to: originalPost.user,
+      type: "repost",
+      post: postId,
+    });
+  }
+
+  res.status(201).json({ message: "Repost created succesfully", repost });
 });

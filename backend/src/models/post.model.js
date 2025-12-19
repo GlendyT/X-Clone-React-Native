@@ -27,6 +27,21 @@ const postSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
+    isRepost: {
+      type: Boolean,
+      default: false,
+    },
+    originalPost: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      default: null,
+    },
+    repostedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
