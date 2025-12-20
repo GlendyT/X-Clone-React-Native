@@ -27,6 +27,9 @@ interface ProfileLayoutProps {
   onEditBanner?: () => void;
   onEditProfile?: () => void;
   isUpdating?: boolean;
+  showTabs?: boolean;
+  activeTab: "posts" | "reposts";
+  onTabChange?: (tab: "posts" | "reposts") => void;
 }
 
 const ProfileLayout = ({
@@ -41,6 +44,9 @@ const ProfileLayout = ({
   onEditProfile,
   isUpdating,
   children,
+  showTabs,
+  activeTab,
+  onTabChange,
 }: ProfileLayoutProps) => {
   const insets = useSafeAreaInsets();
 
@@ -171,6 +177,33 @@ const ProfileLayout = ({
             </View>
           </View>
         </View>
+
+        {/*Tabs - solo si showTabs es true */}
+        {showTabs && (
+          <View className="flex-row border-b border-gray-200">
+            <TouchableOpacity
+              className={`flex-1 py-4 items-center ${activeTab === "posts" ? "border-b-2 border-blue-500" : ""}`}
+              onPress={() => onTabChange?.("posts")}
+            >
+              <Text
+                className={`font-semibold ${activeTab === "posts" ? "text-blue-500" : "text-gray-500"}`}
+              >
+                Posts
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className={`flex-1 py-4 items-center ${activeTab === "reposts" ? "border-b-2 border-blue-500" : ""}`}
+              onPress={() => onTabChange?.("reposts")}
+            >
+              <Text
+                className={`font-semibold ${activeTab === "reposts" ? "text-blue-500" : "text-gray-500"}`}
+              >
+                Reposts
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/*POSTS */}
         {children}

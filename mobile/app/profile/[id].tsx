@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useUserById } from "@/hooks/useUserById";
 import { Feather } from "@expo/vector-icons";
@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFollow } from "@/hooks/useFollow";
 import ProfileLayout from "@/components/ProfileLayout";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUserReposts } from "@/hooks/useReposts";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -32,6 +33,8 @@ const UserProfile = () => {
   const { mutate: followUser, isPending: isFollowPending } = useFollow();
 
   const { refetch: refetchPosts } = usePosts(user?.username || "");
+  const [activeTab, setActiveTab] = useState<"posts" | "reposts">("posts");
+  const { refetch: refetchReposts } = useUserReposts(currentUser?.username);
 
   if (isLoading) {
     return (
@@ -81,6 +84,9 @@ const UserProfile = () => {
           </TouchableOpacity>
         ) : null
       }
+      showTabs={true}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
     >
       {user?.username ? (
         <PostsList username={user?.username} />

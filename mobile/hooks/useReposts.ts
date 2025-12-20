@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert } from "react-native";
 import { postApi, useApiClient } from "@/utils/api";
 
@@ -32,5 +32,32 @@ export const useRepost = () => {
   return {
     repost,
     isReposting: repostMutation.isPending,
+  };
+};
+
+export const useUserReposts = (username?: string) => {
+  const api = useApiClient();
+
+  const {
+    data: repostsData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["userReposts", username],
+    queryFn: () => {
+      return postApi.getUserReposts(api, username!);
+    },
+    select: (response) => {
+      return response.data.posts;
+    },
+    enabled: !!username,
+  });
+
+  return {
+    reposts: repostsData || [],
+    isLoading,
+    error,
+    refetch,
   };
 };

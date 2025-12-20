@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import SignOutButton from "@/components/SignOutButton";
 import { usePosts } from "@/hooks/usePosts";
@@ -7,9 +7,12 @@ import PostsList from "@/components/PostsList";
 import { useProfile } from "@/hooks/useProfile";
 import EditProfileModal from "@/components/EditProfileModal";
 import ProfileLayout from "@/components/ProfileLayout";
+import { useUserReposts } from "@/hooks/useReposts";
+import RepostsList from "@/components/RepostsList";
 
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
+  const [activeTab, setActiveTab] = useState<"posts" | "reposts">("posts");
 
   const { refetch: refetchPosts, isLoading: isRefetching } = usePosts(
     currentUser?.username || ""
@@ -26,6 +29,8 @@ const ProfileScreen = () => {
     refetch: refetchProfile,
     pickImage,
   } = useProfile();
+
+  const { refetch: refetchReposts } = useUserReposts(currentUser?.username);
 
   if (isLoading) {
     return (
@@ -49,6 +54,7 @@ const ProfileScreen = () => {
       isRefetching={isRefetching}
       onRefresh={() => {
         refetchPosts();
+        refetchReposts()
         refetchProfile();
       }}
       headerRight={<SignOutButton />}
@@ -64,8 +70,15 @@ const ProfileScreen = () => {
       onEditBanner={() => pickImage("banner")}
       onEditProfile={() => pickImage("profile")}
       isUpdating={isUpdating}
+      showTabs={true}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
     >
-      <PostsList username={currentUser?.username} />
+      {activeTab === "posts" ? (
+        <PostsList username={currentUser?.username} />
+      ) : (
+        <RepostsList username={currentUser?.username || ""} />
+      )}
       <EditProfileModal
         isVisible={isEditModalVisible}
         onClose={closeEditModal}

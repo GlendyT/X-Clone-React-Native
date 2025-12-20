@@ -5,6 +5,7 @@ import {
   getPost,
   getPosts,
   getUserPosts,
+  getUserReposts,
   likePost,
   repostPost,
 } from "../controllers/post.controller.js";
@@ -21,9 +22,8 @@ router.get("/user/:username", getUserPosts);
 //protected routes
 router.post("/", protectRoute, upload.single("image"), createPost);
 router.post("/:postId/like", protectRoute, likePost);
-console.log("post routes loaded")
 router.post("/:postId/repost", protectRoute, repostPost);
 router.delete("/:postId", protectRoute, deletePost);
-
+router.get("/user/:username/reposts", protectRoute, getUserReposts);
 
 export default router;
