@@ -18,6 +18,8 @@ export interface Comment {
   createdAt: string;
   user: User;
   likes: string[];
+  parentComment?: string;
+  replies?: Comment[];
 }
 
 export interface Post {
@@ -42,7 +44,7 @@ export interface Notification {
     profilePicture?: string;
   };
   to: string;
-  type: "like" | "comment" | "follow" | "repost";
+  type: "like" | "comment" | "follow" | "repost" | "reply";
   post?: {
     _id: string;
     content: string;

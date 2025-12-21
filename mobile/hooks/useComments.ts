@@ -30,6 +30,27 @@ export const useComments = () => {
     },
   });
 
+  const createReplyMutation = useMutation({
+    mutationFn: async ({
+      commentId,
+      content,
+    }: {
+      commentId: string;
+      content: string;
+    }) => {
+      const response = await commentApi.createReply(api, commentId, content);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.refetchQueries({ queryKey: ["posts"] });
+    },
+    onError: (error: any) => {
+      Alert.alert("Error", "Failed to post reply. Try again");
+    },
+  });
+
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: string) => {
       await commentApi.deleteComment(api, commentId);
@@ -85,11 +106,21 @@ export const useComments = () => {
     createCommentMutation.mutate({ postId, content: commentText.trim() });
   };
 
+  const createReply = (commentId: string, content: string) => {
+    if (!content.trim()) {
+      Alert.alert("Empty reply", "Please write something before posting!");
+      return;
+    }
+    createReplyMutation.mutate({ commentId, content: content.trim() });
+  };
+
   return {
     commentText,
     setCommentText,
     createComment,
     isCreatingComment: createCommentMutation.isPending,
+    createReply,
+    isCreatingReply: createReplyMutation.isPending,
     deleteComment,
     isDeletingComment: deleteCommentMutation.isPending,
     toggleLikeComment,

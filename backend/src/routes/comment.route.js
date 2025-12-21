@@ -5,6 +5,7 @@ import {
   getComments,
   deleteComment,
   toggleLikeComment,
+  createReply,
 } from "../controllers/comment.controller.js";
 
 // public routes
@@ -16,5 +17,6 @@ router.get("/post/:postId", getComments);
 router.post("/post/:postId", protectRoute, createComment);
 router.delete("/:commentId", protectRoute, deleteComment);
 router.post("/:commentId/like", protectRoute, toggleLikeComment);
+router.post("/:commentId/reply", protectRoute, createReply);
 
 export default router;

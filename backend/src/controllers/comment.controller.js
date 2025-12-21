@@ -9,9 +9,19 @@ import mongoose from "mongoose";
 export const getComments = asyncHandler(async (req, res) => {
   const { postId } = req.params;
 
-  const comments = await Comment.find({ post: postId })
+  const comments = await Comment.find({ post: postId, parentComment: null })
     .sort({ createdAt: -1 })
-    .populate("user", "username firstName lastName profilePicture");
+    .populate("user", "username firstName lastName profilePicture")
+    .populate({
+      path: "replies",
+      model: "Comment",
+      populate: {
+        path: "user",
+        model: "User",
+        select: "username firstName lastName profilePicture",
+      },
+      options: { sort: { createdAt: 1 } },
+    });
 
   res.status(200).json({ comments });
 });
@@ -147,4 +157,69 @@ export const toggleLikeComment = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({ message: "Like toggled successfully" });
+});
+
+export const createReply = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { commentId } = req.params;
+  const { content } = req.body;
+
+  if (!content || content.trim() === "") {
+    return res.status(400).json({ error: "Reply content is required" });
+  }
+
+  const user = await User.findOne({ clerkId: userId });
+  const parentComment = await Comment.findById(commentId).populate("post");
+
+  if (!user || !parentComment) {
+    return res.status(404).json({ error: "User or comment not found" });
+  }
+
+  const session = await mongoose.startSession();
+  let reply;
+
+  try {
+    await session.withTransaction(async () => {
+      const [newReply] = await Comment.create(
+        [
+          {
+            user: user._id,
+            post: parentComment.post._id,
+            content,
+            parentComment: commentId,
+          },
+        ],
+        {
+          session,
+        }
+      );
+      reply = newReply;
+
+      await Comment.findByIdAndUpdate(
+        commentId,
+        {
+          $push: { replies: reply._id },
+        },
+        { session }
+      );
+    });
+  } finally {
+    await session.endSession();
+  }
+
+  // Verificar que se agregó correctamente
+  const updatedParent = await Comment.findById(commentId);
+
+  // create the notification if is not a reply to own comment
+  if (parentComment.user.toString() !== user._id.toString()) {
+    await Notification.create({
+      from: user._id,
+      to: parentComment.user,
+      type: "reply",
+      post: parentComment.post._id,
+      comment: reply._id,
+    });
+  }
+
+  res.status(201).json({ reply });
 });
