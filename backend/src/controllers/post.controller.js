@@ -330,3 +330,49 @@ export const getUserReposts = asyncHandler(async (req, res) => {
 
   res.status(200).json({ posts: reposts });
 });
+
+export const getUserLikedPosts = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { username } = req.params;
+
+  const user = await User.findOne({ username });
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  // Verificar que el usuario autenticado es el dueño del perfil
+  const authenticatedUser = await User.findOne({ clerkId: userId });
+  if (!authenticatedUser || authenticatedUser._id.toString() !== user._id.toString()) {
+    return res.status(403).json({ error: "Not authorized to view these likes" });
+  }
+
+  const likedPosts = await Post.find({
+    likes: user._id,
+    isRepost: { $ne: true },
+  })
+    .sort({ createdAt: -1 })
+    .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username firstName lastName profilePicture")
+    .populate({
+      path: "comments",
+      populate: [
+        { path: "user", select: "username firstName lastName profilePicture" },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
+    })
+    .populate({
+      path: "originalPost",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    });
+
+  res.status(200).json({ posts: likedPosts });
+});

@@ -28,8 +28,8 @@ interface ProfileLayoutProps {
   onEditProfile?: () => void;
   isUpdating?: boolean;
   showTabs?: boolean;
-  activeTab: "posts" | "reposts";
-  onTabChange?: (tab: "posts" | "reposts") => void;
+  activeTab: "posts" | "reposts" | "likes";
+  onTabChange?: (tab: "posts" | "reposts" | "likes") => void;
 }
 
 const ProfileLayout = ({
@@ -202,6 +202,20 @@ const ProfileLayout = ({
                 Reposts
               </Text>
             </TouchableOpacity>
+
+            {/*Solo mostrar likes si es el propio usuario */}
+            {canEdit && (
+              <TouchableOpacity
+                className={`flex-1 py-4 items-center ${activeTab === "likes" ? "border-b-2 border-blue-500" : ""}`}
+                onPress={() => onTabChange?.("likes")}
+              >
+                <Text
+                  className={`font-semibold ${activeTab === "likes" ? "text-blue-500" : "text-gray-500"}`}
+                >
+                  Likes
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 

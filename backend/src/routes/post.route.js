@@ -4,6 +4,7 @@ import {
   deletePost,
   getPost,
   getPosts,
+  getUserLikedPosts,
   getUserPosts,
   getUserReposts,
   likePost,
@@ -18,12 +19,13 @@ const router = express.Router();
 router.get("/", getPosts);
 router.get("/:postId", getPost);
 router.get("/user/:username", getUserPosts);
+router.get("/user/:username/reposts", getUserReposts);
 
 //protected routes
 router.post("/", protectRoute, upload.single("image"), createPost);
 router.post("/:postId/like", protectRoute, likePost);
 router.post("/:postId/repost", protectRoute, repostPost);
 router.delete("/:postId", protectRoute, deletePost);
-router.get("/user/:username/reposts", protectRoute, getUserReposts);
+router.get("/user/:username/likes", protectRoute, getUserLikedPosts);
 
 export default router;

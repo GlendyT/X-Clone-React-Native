@@ -9,8 +9,6 @@ import { userApi, useApiClient } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { useFollow } from "@/hooks/useFollow";
 import ProfileLayout from "@/components/ProfileLayout";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserReposts } from "@/hooks/useReposts";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -33,8 +31,9 @@ const UserProfile = () => {
   const { mutate: followUser, isPending: isFollowPending } = useFollow();
 
   const { refetch: refetchPosts } = usePosts(user?.username || "");
-  const [activeTab, setActiveTab] = useState<"posts" | "reposts">("posts");
-  const { refetch: refetchReposts } = useUserReposts(currentUser?.username);
+  const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes">(
+    "posts"
+  );
 
   if (isLoading) {
     return (

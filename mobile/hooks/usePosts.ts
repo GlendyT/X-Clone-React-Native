@@ -26,6 +26,7 @@ export const usePosts = (username?: string) => {
     mutationFn: (postId: string) => postApi.likePost(api, postId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["likedPosts"] });
       if (username) {
         queryClient.invalidateQueries({ queryKey: ["userPosts", username] });
       }
@@ -36,6 +37,8 @@ export const usePosts = (username?: string) => {
     mutationFn: (postId: string) => postApi.deletePost(api, postId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["likedPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["userReposts"] });
       if (username) {
         queryClient.invalidateQueries({ queryKey: ["userPosts", username] });
       }
