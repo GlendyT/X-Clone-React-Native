@@ -9,6 +9,7 @@ import { userApi, useApiClient } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { useFollow } from "@/hooks/useFollow";
 import ProfileLayout from "@/components/ProfileLayout";
+import RepostsList from "@/components/RepostsList";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -26,7 +27,7 @@ const UserProfile = () => {
     queryFn: () => userApi.getCurrentUser(api).then((res) => res.data.user),
   });
 
-  const isFollowing = user?.followers?.includes(currentUser?._id);
+  const isFollowing = user?.isFollowing;
 
   const { mutate: followUser, isPending: isFollowPending } = useFollow();
 
@@ -87,12 +88,10 @@ const UserProfile = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      {user?.username ? (
-        <PostsList username={user?.username} />
+      {user?.username && activeTab === "posts" ? (
+        <PostsList username={user?.username || ""} />
       ) : (
-        <View>
-          <Text>Loading user posts</Text>
-        </View>
+        <RepostsList username={user?.username || ""} />
       )}
     </ProfileLayout>
   );

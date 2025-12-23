@@ -30,6 +30,8 @@ interface ProfileLayoutProps {
   showTabs?: boolean;
   activeTab: "posts" | "reposts" | "likes";
   onTabChange?: (tab: "posts" | "reposts" | "likes") => void;
+  onFollowingPress?: () => void;
+  onFollowersPress?: () => void;
 }
 
 const ProfileLayout = ({
@@ -47,6 +49,8 @@ const ProfileLayout = ({
   showTabs,
   activeTab,
   onTabChange,
+  onFollowersPress,
+  onFollowingPress,
 }: ProfileLayoutProps) => {
   const insets = useSafeAreaInsets();
 
@@ -157,19 +161,20 @@ const ProfileLayout = ({
             </View>
 
             <View className="flex-row">
-              <TouchableOpacity className="mr-6">
+              <TouchableOpacity className="mr-6" onPress={onFollowingPress}>
                 <Text className="text-gray-900">
                   <Text className="font-bold">
-                    {user.following?.length || 0}
+                    {user.followingCount || 0}
+                    
                   </Text>
                   <Text className="text-gray-500 "> Following</Text>
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity className="mr-6">
+              <TouchableOpacity className="mr-6" onPress={onFollowersPress}>
                 <Text className="text-gray-900">
                   <Text className="font-bold">
-                    {user.followers?.length || 0}
+                    {user.followersCount || 0}
                   </Text>
                   <Text className="text-gray-500 "> Followers</Text>
                 </Text>

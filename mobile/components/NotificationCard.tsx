@@ -85,7 +85,10 @@ const NotificationCard = ({
               </Text>
             </View>
 
-            <TouchableOpacity className="ml-2 p-1">
+            <TouchableOpacity
+              className="ml-2 p-1"
+              onPress={() => handleDelete()}
+            >
               <Feather name="trash" size={16} color={"#E0245E"} />
             </TouchableOpacity>
           </View>

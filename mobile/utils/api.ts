@@ -48,8 +48,6 @@ export const userApi = {
   updateProfile: (api: AxiosInstance, data: any) =>
     api.put("/users/profile", data),
   getUserById: (api: AxiosInstance, id: string) => api.get(`/users/${id}`),
-  followUser: (api: AxiosInstance, targetUserId: string) =>
-    api.post(`/users/follow/${targetUserId}`),
 };
 
 export const postApi = {
@@ -80,4 +78,13 @@ export const commentApi = {
   toggleLikeComment: (api: AxiosInstance, commentId: string) =>
     api.post(`/comments/${commentId}/like`),
   cleanup: (api: AxiosInstance) => api.post(`/comments/cleanup`),
+};
+
+export const followApi = {
+  getFollowers: (api: AxiosInstance, userId: string, page = 1, limit = 10) =>
+    api.get(`/users/${userId}/followers?page=${page}&limit=${limit}`),
+  getFollowing: (api: AxiosInstance, userId: string, page = 1, limit = 10) =>
+    api.get(`/users/${userId}/following?page=${page}&limit=${limit}`),
+  followUser: (api: AxiosInstance, targetUserId: string) =>
+    api.post(`/users/${targetUserId}/follow`),
 };
