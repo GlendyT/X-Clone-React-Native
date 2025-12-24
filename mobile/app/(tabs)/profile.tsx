@@ -10,6 +10,7 @@ import ProfileLayout from "@/components/ProfileLayout";
 import { useUserReposts } from "@/hooks/useReposts";
 import RepostsList from "@/components/RepostsList";
 import LikesList from "@/components/LikesList";
+import { useRouter } from "expo-router";
 
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
@@ -34,6 +35,7 @@ const ProfileScreen = () => {
   } = useProfile();
 
   const { refetch: refetchReposts } = useUserReposts(currentUser?.username);
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -76,7 +78,26 @@ const ProfileScreen = () => {
       showTabs={true}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      
+      onFollowingPress={() =>
+        router.push({
+          pathname: "/profile/follows",
+          params: {
+            userId: currentUser._id,
+            type: "following",
+            username: currentUser.username,
+          },
+        })
+      }
+      onFollowersPress={() =>
+        router.push({
+          pathname: "/profile/follows",
+          params: {
+            userId: currentUser._id,
+            type: "followers",
+            username: currentUser.username,
+          },
+        })
+      }
     >
       {activeTab === "posts" ? (
         <PostsList username={currentUser?.username} />

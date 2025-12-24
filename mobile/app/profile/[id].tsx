@@ -87,6 +87,26 @@ const UserProfile = () => {
       showTabs={true}
       activeTab={activeTab}
       onTabChange={setActiveTab}
+      onFollowingPress={() =>
+        router.push({
+          pathname: "/profile/follows",
+          params: {
+            userId: user._id,
+            type: "following",
+            username: user.username,
+          },
+        })
+      }
+      onFollowersPress={() =>
+        router.push({
+          pathname: "/profile/follows",
+          params: {
+            userId: user._id,
+            type: "followers",
+            username: user.username,
+          },
+        })
+      }
     >
       {user?.username && activeTab === "posts" ? (
         <PostsList username={user?.username || ""} />
