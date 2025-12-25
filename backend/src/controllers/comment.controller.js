@@ -1,13 +1,13 @@
 import asyncHandler from "express-async-handler";
 import { getAuth } from "@clerk/express";
 import Comment from "../models/comment.model.js";
-import Post from "../models/user.model.js";
+import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
 import mongoose from "mongoose";
 
 export const getComments = asyncHandler(async (req, res) => {
-  const { posyId } = req.params;
+  const { postId } = req.params;
 
   const comments = await Comment.find({ post: postId })
     .sort({ createdAt: -1 })
@@ -47,14 +47,18 @@ export const createComment = asyncHandler(async (req, res) => {
 
   try {
     await session.withTransaction(async () => {
-      comment = await Comment.create(
-        {
-          user: user._id,
-          post: postId,
-          content,
-        },
+      // Model.create() with session requires an array as first argument
+      const [newComment] = await Comment.create(
+        [
+          {
+            user: user._id,
+            post: postId,
+            content,
+          },
+        ],
         { session }
       );
+      comment = newComment;
 
       //link the comment to the post
       await Post.findByIdAndUpdate(
