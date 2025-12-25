@@ -16,6 +16,7 @@ import { Feather } from "@expo/vector-icons";
 import NoNotificationsFound from "@/components/NoNotificationsFound";
 import NotificationCard from "@/components/NotificationCard";
 import { Notification } from "@/types";
+import { useRouter } from "expo-router";
 
 const NotificationsScreen = () => {
   const {
@@ -26,6 +27,7 @@ const NotificationsScreen = () => {
     isRefetching,
     deleteNotification,
   } = useNotifications();
+  const router = useRouter();
 
   const inset = useSafeAreaInsets();
 
@@ -45,7 +47,10 @@ const NotificationsScreen = () => {
       {/*HEADER */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
         <Text className="text-xl font-bold text-gray-900">Notifications</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+         className="p-2"
+         onPress={() => router.push("/notifications/NotificationSettings")}
+        >
           <Feather name="settings" size={24} color={"#657786"} />
         </TouchableOpacity>
       </View>

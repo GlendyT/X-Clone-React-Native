@@ -5,6 +5,7 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
 import mongoose from "mongoose";
+import { shouldSendNotification } from "./notification.controller.js";
 
 export const getComments = asyncHandler(async (req, res) => {
   const { postId } = req.params;
@@ -85,13 +86,16 @@ export const createComment = asyncHandler(async (req, res) => {
 
   // create notification if not commenting on own post
   if (post.user.toString() !== user._id.toString()) {
-    await Notification.create({
-      from: user._id,
-      to: post.user,
-      type: "comment",
-      post: postId,
-      comment: comment._id,
-    });
+    const shouldNotify = await shouldSendNotification(post.user, "comment");
+    if (shouldNotify) {
+      await Notification.create({
+        from: user._id,
+        to: post.user,
+        type: "comment",
+        post: postId,
+        comment: comment._id,
+      });
+    }
   }
 
   res.status(201).json({ comment });
@@ -208,17 +212,24 @@ export const createReply = asyncHandler(async (req, res) => {
   }
 
   // Verificar que se agregó correctamente
-  const updatedParent = await Comment.findById(commentId);
+  //const updatedParent = await Comment.findById(commentId);
 
   // create the notification if is not a reply to own comment
   if (parentComment.user.toString() !== user._id.toString()) {
-    await Notification.create({
-      from: user._id,
-      to: parentComment.user,
-      type: "reply",
-      post: parentComment.post._id,
-      comment: reply._id,
-    });
+    const shouldNotify = await shouldSendNotification(
+      parentComment.user,
+      "reply"
+    );
+
+    if (shouldNotify) {
+      await Notification.create({
+        from: user._id,
+        to: parentComment.user,
+        type: "reply",
+        post: parentComment.post._id,
+        comment: reply._id,
+      });
+    }
   }
 
   res.status(201).json({ reply });

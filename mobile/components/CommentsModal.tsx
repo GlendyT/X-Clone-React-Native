@@ -140,7 +140,7 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
                     <Text
                       className={`font-semibold ${commentText.trim() ? "text-white" : "text-gray-500"}`}
                     >
-                      Replay
+                      Reply
                     </Text>
                   )}
                 </TouchableOpacity>
