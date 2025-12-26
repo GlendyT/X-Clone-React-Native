@@ -298,6 +298,49 @@ export const repostPost = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Repost created succesfully", repost });
 });
 
+export const quotePost = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { postId } = req.params;
+  const { content } = req.body;
+
+  const originalPost = await Post.findById(postId);
+  if (!originalPost) {
+    return res.status(404).json({ error: "Post not found" });
+  }
+
+  const user = await User.findOne({ clerkId: userId });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const quote = await Post.create({
+    user: user._id,
+    content: content || "",
+    originalPost: postId,
+  });
+
+  await Post.findByIdAndUpdate(postId, {
+    $push: { quotedBy: user._id },
+  });
+
+  if (originalPost.user.toString() !== user._id.toString()) {
+    const shouldNotify = await shouldSendNotification(
+      originalPost.user,
+      "quote"
+    );
+    if (shouldNotify) {
+      await Notification.create({
+        from: user._id,
+        to: originalPost.user,
+        type: "quote",
+        post: quote._id,
+      });
+    }
+  }
+
+  res.status(201).json({ post: quote });
+});
+
 export const getUserReposts = asyncHandler(async (req, res) => {
   const { username } = req.params;
 

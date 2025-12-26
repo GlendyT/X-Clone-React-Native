@@ -9,6 +9,7 @@ import {
   getUserReposts,
   likePost,
   repostPost,
+  quotePost,
 } from "../controllers/post.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import upload from "../middleware/upload.middleware.js";
@@ -25,6 +26,7 @@ router.get("/user/:username/reposts", getUserReposts);
 router.post("/", protectRoute, upload.single("image"), createPost);
 router.post("/:postId/like", protectRoute, likePost);
 router.post("/:postId/repost", protectRoute, repostPost);
+router.post("/:postId/quote", protectRoute, quotePost);
 router.delete("/:postId", protectRoute, deletePost);
 router.get("/user/:username/likes", protectRoute, getUserLikedPosts);
 

@@ -37,6 +37,54 @@ export const useRepost = () => {
   };
 };
 
+export const useQuotePost = () => {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+
+  const quoteMutation = useMutation({
+    mutationFn: async ({
+      postId,
+      content,
+    }: {
+      postId: string;
+      content: string;
+    }) => {
+      const response = await postApi.quotePost(api, postId, content);
+      return response.data;
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["userPosts"] });
+      Alert.alert("Success", "Quote posted succesfully");
+    },
+    onError: (error: any) => {
+      Alert.alert(
+        "Error",
+        error.response.data.error || "Failed to quote post. Please try again"
+      );
+    },
+  });
+
+  const quotePost = (
+    postId: string,
+    content: string,
+    options?: { onSuccess?: () => void }
+  ) => {
+    quoteMutation.mutate(
+      { postId, content },
+      {
+        onSuccess: () => options?.onSuccess?.(),
+      }
+    );
+  };
+
+  return {
+    quotePost,
+    isQuoting: quoteMutation.isPending,
+  };
+};
+
 export const useUserReposts = (username?: string) => {
   const api = useApiClient();
 
