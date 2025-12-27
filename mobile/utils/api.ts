@@ -6,7 +6,7 @@ import { useAuth } from "@clerk/clerk-expo";
 // iOS Simulator: Use localhost
 // localhost api would not work on your physical device
 //const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://x-clone-react-native-ashy.vercel.app/api";
-const API_BASE_URL = "http://localhost:5001/api";
+const API_BASE_URL = "http://192.168.1.135:5001/api";
 
 // this will basically create an authenticated api, pass the token into our headers
 export const createApiClient = (
