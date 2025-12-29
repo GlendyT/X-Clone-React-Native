@@ -6,7 +6,17 @@ import { useAuth } from "@clerk/clerk-expo";
 // iOS Simulator: Use localhost
 // When using adb reverse, localhost works on physical device via USB tunnel
 //const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://x-clone-react-native-ashy.vercel.app/api";
-const API_BASE_URL = "http://localhost:5001/api";
+
+// Auto-detect based on platform - adjust for your setup
+const getApiUrl = () => {
+  // If you're using Android Emulator, uncomment this:
+  // if (Platform.OS === "android") return "http://10.0.2.2:5001/api";
+  
+  // For iOS Simulator or physical device with adb reverse:
+  return "http://localhost:5001/api";
+};
+
+const API_BASE_URL = getApiUrl();
 
 // this will basically create an authenticated api, pass the token into our headers
 export const createApiClient = (
