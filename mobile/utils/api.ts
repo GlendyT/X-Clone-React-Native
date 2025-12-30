@@ -48,6 +48,8 @@ export const userApi = {
   updateProfile: (api: AxiosInstance, data: any) =>
     api.put("/users/profile", data),
   getUserById: (api: AxiosInstance, id: string) => api.get(`/users/${id}`),
+  searchUsers: (api: AxiosInstance, query: string) =>
+    api.get(`/users/search?q=${query}`),
 };
 
 export const postApi = {

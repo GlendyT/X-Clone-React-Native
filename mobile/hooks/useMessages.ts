@@ -1,6 +1,7 @@
-import { conversationApi, useApiClient } from "@/utils/api";
+import { User } from "@/types";
+import { conversationApi, useApiClient, userApi } from "@/utils/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 export const useConversations = () => {
@@ -170,4 +171,33 @@ export const useMessages = (conversationId: string) => {
     loadMoreMessages,
     hasMoreMessages: messagesData?.pagination?.hasMore || false,
   };
+};
+
+export const useUserSearch = (searchText: string) => {
+  const api = useApiClient();
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 300);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [searchText]);
+
+  const { data: searchedUsers, isLoading: isSearching } = useQuery<User[]>({
+    queryKey: ["userSearch", debouncedSearchText],
+    queryFn: async () => {
+      if (debouncedSearchText.trim() === "") {
+        return [];
+      }
+      const response = await userApi.searchUsers(api, debouncedSearchText);
+      return response.data;
+    },
+    enabled: debouncedSearchText.trim().length > 0,
+  });
+
+  return { searchedUsers: searchedUsers || [], isSearching };
 };

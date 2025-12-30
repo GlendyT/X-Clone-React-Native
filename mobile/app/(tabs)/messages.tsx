@@ -14,11 +14,10 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-import { useConversations } from "@/hooks/useMessages";
-import { Conversation } from "@/types";
+import { useConversations, useUserSearch } from "@/hooks/useMessages";
+import { Conversation, User } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "expo-router";
-
 
 //TODO: IMPLEMENT REAL DATA AND FUNCTIONALITY
 
@@ -26,6 +25,8 @@ const MessagesScreen = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
+
+  const { searchedUsers, isSearching } = useUserSearch(searchText);
 
   const {
     conversations,
@@ -56,7 +57,16 @@ const MessagesScreen = () => {
     if (conversation.otherUser?._id) {
       router.push({
         pathname: "/conversation/[id]",
-        params: { id: conversation.otherUser._id }
+        params: { id: conversation.otherUser._id },
+      });
+    }
+  };
+
+  const startNewConversation = (user: User) => {
+    if (user._id) {
+      router.push({
+        pathname: "/conversation/[id]",
+        params: { id: user._id },
       });
     }
   };
@@ -87,9 +97,6 @@ const MessagesScreen = () => {
       {/*HEADER */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
         <Text className="text-xl font-bold text-gray-900">Messages</Text>
-        <TouchableOpacity>
-          <Feather name="edit" size={24} color={"#1DA1F2"} />
-        </TouchableOpacity>
       </View>
 
       {/* SEARCH BAR */}
@@ -103,21 +110,81 @@ const MessagesScreen = () => {
             value={searchText}
             onChangeText={setSearchText}
           />
+
+          {searchText ? (
+            <TouchableOpacity onPress={() => setSearchText("")} className="p-1">
+              <Feather name="x" size={18} color={"#657786"} />
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
+      {searchText.trim() ? (
+        isSearching ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size={"large"} color={"#1DA1F2"} />
+          </View>
+        ) : searchedUsers.length === 0 ? (
+          <View className="flex-1 items-center justify-center px-8">
+            <Feather name="search" size={64} color={"#E1E8ED"} />
+            <Text className="text-lg font-semibold mt-4">No users found</Text>
+            <Text className="text-sm text-gray-500 text-center mt-2">
+              Try searching for a different name or username
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
+          >
+            {searchedUsers.map((user: User) => (
+              <TouchableOpacity
+                key={user._id}
+                className="flex-row items-center p-4 border-b border-gray-50 active:bg"
+                onPress={() => startNewConversation(user)}
+              >
+                <Image
+                  source={{
+                    uri:
+                      user.profilePicture || "https://via.placeholder.com/150",
+                  }}
+                  className="size-12 rounded-full mr-3"
+                />
+                <View className="flex-1">
+                  <View className="flex-row items-center gap-1">
+                    <Text className="font-semibold text-gray-900">
+                      {user.firstName} {user.lastName}
+                    </Text>
+                    <Text className="text-gray-500 text-sm ml-1">
+                      @{user.username}
+                    </Text>
 
-      {isLoading ? (
+                    {user.verified && (
+                      <Feather
+                        name="check-circle"
+                        size={16}
+                        color={"#1DA1F2"}
+                        className="ml-1"
+                      />
+                    )}
+                  </View>
+                  <Text className="text-sm text-gray-500 mt-1">
+                    Tap to start a conversation
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )
+      ) : isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size={"large"} color={"#1DA1F2"} />
         </View>
-      ) : filteredConversations.length === 0 ? (
+      ) : conversations.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Feather name="message-circle" size={64} color={"#E1E8ED"} />
-          <Text>No messages yet</Text>
+          <Text>No messages</Text>
           <Text className="text-sm text-gray-500 text-center mt-2">
-            {searchText
-              ? "No conersations found"
-              : "Start a conversation from a user's profile"}
+            Start a conversation from a user&apos;s profile
           </Text>
         </View>
       ) : (
@@ -126,7 +193,7 @@ const MessagesScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
         >
-          {filteredConversations.map((conversation: Conversation) => (
+          {conversations.map((conversation: Conversation) => (
             <TouchableOpacity
               key={conversation._id}
               className="flex-row items-center p-4 border-b border-gray-50 active:bg-gray-50"
@@ -141,17 +208,15 @@ const MessagesScreen = () => {
                 }}
                 className="size-12 rounded-full mr-3"
               />
-
               <View className="flex-1">
                 <View className="flex-row items-center justify-between mb-1">
                   <View className="flex-row items-center gap-1">
                     <Text className="font-semibold text-gray-900">
-                      {" "}
-                      {conversation.otherUser?.firstName}
+                      {conversation.otherUser?.firstName}{" "}
                       {conversation.otherUser?.lastName}
                     </Text>
                     <Text className="text-gray-500 text-sm ml-1">
-                      @{conversation.otherUser?.username}{" "}
+                      @{conversation.otherUser?.username}
                     </Text>
                     {conversation.otherUser?.verified && (
                       <Feather
@@ -163,14 +228,14 @@ const MessagesScreen = () => {
                     )}
                   </View>
                   <Text className="text-gray-500 text-sm">
-                    {getRelativeTime(conversation.lastMessage?.sentAt || "")}
+                    {getRelativeTime(conversation.lastMessage.sentAt || "")}
                   </Text>
                 </View>
                 <Text className="text-sm text-gray-500" numberOfLines={1}>
-                  {conversation.lastMessage?.content || "No messages yet"}
+                  {conversation.lastMessage.content || "No messages yet"}
                 </Text>
                 {conversation.unreadCount > 0 && (
-                  <View className="bg-blue-500 rounded-full size-5 items-center justify-center ml-2">
+                  <View className="absolute right-0 bottom-0 bg-blue-500 rounded-full size-5 items-center justify-center">
                     <Text className="text-white text-xs font-semibold">
                       {conversation.unreadCount}
                     </Text>
@@ -181,7 +246,6 @@ const MessagesScreen = () => {
           ))}
         </ScrollView>
       )}
-      {/* CONVERSATION LIST  */}
 
       {/*  QUICK ACTIONS */}
       <View className="px-4 py-2 border-t border-gray-100 bg-gray-50">

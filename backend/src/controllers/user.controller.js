@@ -1,7 +1,6 @@
 import { getAuth } from "@clerk/express";
 import asyncHandler from "express-async-handler";
-import Notification from "../models/notification.model.js";
-import Follow from "../models/follow.model.js"
+import Follow from "../models/follow.model.js";
 import User from "../models/user.model.js";
 import { clerkClient } from "@clerk/express";
 
@@ -130,3 +129,25 @@ export const getUserById = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const searchUsers = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  const { userId } = getAuth(req);
+
+  if (!q) {
+    return res.status(200).json([]);
+  }
+
+  const regex = RegExp(q, "i");
+
+  const users = await User.find({
+    clerkId: { $ne: userId },
+    $or: [
+      { username: { $regex: regex } },
+      { firstName: { $regex: regex } },
+      { lastName: { $regex: regex } },
+    ],
+  });
+
+  res.status(200).json( users );
+});
