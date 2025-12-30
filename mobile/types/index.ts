@@ -11,6 +11,7 @@ export interface User {
   followingCount?: number;
   followersCount?: number;
   isFollowing?: boolean;
+    verified?: boolean;
 }
 
 export interface Comment {
@@ -56,4 +57,31 @@ export interface Notification {
     content: string;
   };
   createdAt: string;
+}
+
+export interface Message {
+  _id: string;
+  conversation: string;
+  sender: User;
+  receiver: User;
+  content: string;
+  read: boolean;
+  readAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Conversation {
+  _id: string;
+  participants: User[];
+  lastMessage: {
+    content: string;
+    sender: User;
+    sentAt: string;
+  };
+  unreadCount: number;
+  otherUser?: User;
+  createdAt: string;
+  updatedAt: string;
+
 }
