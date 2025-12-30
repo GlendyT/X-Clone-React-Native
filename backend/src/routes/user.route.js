@@ -5,6 +5,7 @@ import {
   getUserProfile,
   syncUser,
   updateProfile,
+  getUserById
 } from "../controllers/user.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
@@ -18,6 +19,7 @@ router.post("/sync", protectRoute, syncUser);
 router.get("/me", protectRoute, getCurrentUser);
 router.put("/profile", protectRoute, updateProfile);
 router.post("/follow/:targetUserId", protectRoute, followUser);
+router.get("/:id", protectRoute, getUserById)
 
 // update profile => auth
 

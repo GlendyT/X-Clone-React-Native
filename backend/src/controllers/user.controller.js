@@ -76,18 +76,18 @@ export const followUser = asyncHandler(async (req, res) => {
 
   if (isFollowing) {
     //unfollow
-    await User.finByIdAndUpdate(currentUser._id, {
+    await User.findByIdAndUpdate(currentUser._id, {
       $pull: { following: targetUserId },
     });
-    await User.finByIdAndUpdate(targetUserId, {
+    await User.findByIdAndUpdate(targetUserId, {
       $pull: { followers: currentUser._id },
     });
   } else {
     //follow
-    await User.finByIdAndUpdate(currentUser._id, {
+    await User.findByIdAndUpdate(currentUser._id, {
       $push: { following: targetUserId },
     });
-    await User.finByIdAndUpdate(targetUserId, {
+    await User.findByIdAndUpdate(targetUserId, {
       $push: { followers: currentUser._id },
     });
 
@@ -105,3 +105,19 @@ export const followUser = asyncHandler(async (req, res) => {
       : "User followed succesfully",
   });
 });
+
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
