@@ -98,10 +98,19 @@ export const deleteComment = asyncHandler(async (req, res) => {
     return res.status(404).json({ error: "User or comment not found" });
   }
 
-  if (comment.user.toString() !== user._id.toString()) {
-    return res
-      .status(403)
-      .json({ error: "You can only delete your own comments" });
+  const post = await Post.findById(comment.post);
+
+  if (!post) {
+    return res.status(404).json({ error: "Post not found" });
+  }
+
+  if (
+    comment.user.toString() !== user._id.toString() &&
+    post.user.toString() !== user._id.toString()
+  ) {
+    return res.status(403).json({
+      error: "You can only delete your own comments or comments on your posts",
+    });
   }
 
   // remove comment from post
@@ -112,4 +121,30 @@ export const deleteComment = asyncHandler(async (req, res) => {
   await Comment.findByIdAndDelete(commentId);
 
   res.status(200).json({ message: "Comment deleted successfully" });
+});
+
+export const toggleLikeComment = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { commentId } = req.params;
+
+  const user = await User.findOne({ clerkId: userId });
+  const comment = await Comment.findById(commentId);
+
+  if (!user || !comment) {
+    return res.status(404).json({ error: "User or comment not found" });
+  }
+
+  const isLiked = comment.likes.includes(user._id);
+
+  if (isLiked) {
+    await Comment.findByIdAndUpdate(commentId, {
+      $pull: { likes: user._id },
+    });
+  } else {
+    await Comment.findByIdAndUpdate(commentId, {
+      $addToSet: { likes: user._id },
+    });
+  }
+
+  res.status(200).json({ message: "Like toggled successfully" });
 });

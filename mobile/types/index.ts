@@ -17,6 +17,7 @@ export interface Comment {
   content: string;
   createdAt: string;
   user: User;
+  likes: string[]
 }
 
 export interface Post {
