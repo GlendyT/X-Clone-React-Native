@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import React from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import SignOutButton from "@/components/SignOutButton";
@@ -16,10 +11,9 @@ import ProfileLayout from "@/components/ProfileLayout";
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
 
-  const {
-    refetch: refetchPosts,
-    isLoading: isRefetching,
-  } = usePosts(currentUser?.username || "");
+  const { refetch: refetchPosts, isLoading: isRefetching } = usePosts(
+    currentUser?.username || ""
+  );
 
   const {
     isEditModalVisible,
@@ -30,6 +24,7 @@ const ProfileScreen = () => {
     updateFormField,
     isUpdating,
     refetch: refetchProfile,
+    pickImage,
   } = useProfile();
 
   if (isLoading) {
@@ -65,6 +60,10 @@ const ProfileScreen = () => {
           <Text className="font-semibold text-gray-900 ">Edit profile</Text>
         </TouchableOpacity>
       }
+      canEdit={true}
+      onEditBanner={() => pickImage("banner")}
+      onEditProfile={() => pickImage("profile")}
+      isUpdating={isUpdating}
     >
       <PostsList username={currentUser?.username} />
       <EditProfileModal
