@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import React from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useUserById } from "@/hooks/useUserById";
@@ -14,6 +9,7 @@ import { userApi, useApiClient } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { useFollow } from "@/hooks/useFollow";
 import ProfileLayout from "@/components/ProfileLayout";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -71,7 +67,7 @@ const UserProfile = () => {
         </TouchableOpacity>
       }
       actionButton={
-        currentUser?._id !== user._id && (
+        currentUser?._id !== user._id ? (
           <TouchableOpacity
             onPress={() => followUser(user._id)}
             disabled={isFollowPending}
@@ -83,10 +79,16 @@ const UserProfile = () => {
               {isFollowing ? "Following" : "Follow"}
             </Text>
           </TouchableOpacity>
-        )
+        ) : null
       }
     >
-      <PostsList username={user?.username} />
+      {user?.username ? (
+        <PostsList username={user?.username} />
+      ) : (
+        <View>
+          <Text>Loading user posts</Text>
+        </View>
+      )}
     </ProfileLayout>
   );
 };

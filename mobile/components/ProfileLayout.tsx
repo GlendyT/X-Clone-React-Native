@@ -51,12 +51,14 @@ const ProfileLayout = ({
       {/*HEADER */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
         <View className="flex-row items-center">
-          {headerLeft && <View className="mr-4">{headerLeft} </View>}
+          {headerLeft ? <View className="mr-4">{headerLeft}</View> : null}
           <View>
             <Text className="text-xl font-bold text-gray-900">
-              {user.firstName} {user.lastName}
+              {user.firstName || ""} {user.lastName || ""}
             </Text>
-            <Text className="text-gray-500 text-sm">@{user.username}</Text>
+            <Text className="text-gray-500 text-sm">
+              @{user.username || ""}
+            </Text>
           </View>
         </View>
         {headerRight}
@@ -117,7 +119,7 @@ const ProfileLayout = ({
                 </TouchableOpacity>
               )}
             </View>
-            {actionButton}
+            {actionButton && actionButton}
           </View>
 
           {/*User info */}
@@ -141,7 +143,7 @@ const ProfileLayout = ({
             <View className="flex-row items-center mb-3">
               <Feather name="calendar" size={16} color={"#657786"} />
               <Text className="text-gray-500 ml-2">
-                Joined
+                Joined{" "}
                 {user.createdAt
                   ? format(new Date(user.createdAt), "MMMM yyyy")
                   : ""}
