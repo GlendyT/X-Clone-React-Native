@@ -11,7 +11,7 @@ export interface User {
   followingCount?: number;
   followersCount?: number;
   isFollowing?: boolean;
-    verified?: boolean;
+  verified?: boolean;
 }
 
 export interface Comment {
@@ -83,5 +83,10 @@ export interface Conversation {
   otherUser?: User;
   createdAt: string;
   updatedAt: string;
+}
 
+export interface Trend {
+  _id: string;
+  topic: string;
+  searchCount: number;
 }
