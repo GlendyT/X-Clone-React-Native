@@ -7,9 +7,13 @@ const trendSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    postCount: {
+      type: Number,
+      default: 0,
+    },
     searchCount: {
       type: Number,
-      default: 1,
+      default: 0,
     },
   },
   {

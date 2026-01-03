@@ -11,6 +11,8 @@ export const useTrends = () => {
   const {
     data: trends,
     isLoading: isLoadingTrends,
+    refetch: refetchTrends,
+    isRefetching: isRefetchingTrends,
   } = useQuery<Trend[]>({
     queryKey: ["trends"],
     queryFn: async () => {
@@ -40,5 +42,7 @@ export const useTrends = () => {
     trends: trends || [],
     isLoadingTrends,
     handleSearchSubmit,
+    refetchTrends,
+    isRefetchingTrends,
   };
 };

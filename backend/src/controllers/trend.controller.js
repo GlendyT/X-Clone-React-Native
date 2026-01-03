@@ -6,7 +6,7 @@ export const recordSearch = asyncHandler(async (req, res) => {
 
   if (!searchTerm || typeof searchTerm !== "string") {
     res.status(400);
-    throw new Error("Tearm search is required");
+    throw new Error("Term search is required");
   }
 
   const topic = `#${searchTerm.toLowerCase().replace(/\s+/g, "")}`;
@@ -21,7 +21,7 @@ export const recordSearch = asyncHandler(async (req, res) => {
 });
 
 export const getTrends = asyncHandler(async (req, res) => {
-  const trends = await Trend.find({}).sort({ searchCount: -1 }).limit(10);
+  const trends = await Trend.find({ postCount: { $gt: 0} }).sort({ postCount: -1 }).limit(10)
 
   res.status(200).json(trends);
 });

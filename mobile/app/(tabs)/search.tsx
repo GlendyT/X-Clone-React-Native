@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +20,8 @@ const SearchScreen = () => {
     trends,
     isLoadingTrends,
     handleSearchSubmit,
+    refetchTrends,
+    isRefetchingTrends,
   } = useTrends();
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -44,7 +47,15 @@ const SearchScreen = () => {
         </View>
       </View>
 
-      <ScrollView className="flex-1">
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetchingTrends}
+            onRefresh={refetchTrends}
+          />
+        }
+      >
         <View className="p-4">
           <Text className="text-xl font-bold text-gray-900 mb-4">
             Trends for you
@@ -55,7 +66,7 @@ const SearchScreen = () => {
               color={"#1DA1F2"}
               className="mt-4"
             />
-          ) : (
+          ) : trends.length > 0 ? (
             trends.map((item) => (
               <TouchableOpacity
                 key={item._id}
@@ -64,15 +75,19 @@ const SearchScreen = () => {
                 <Text className="text-gray-500 text-sm">
                   Trending in your region
                 </Text>
-                <Text className="font-bold text-gray-900 text-lg">
+                <Text className="font-bold text-blue-500 text-lg">
                   {" "}
                   {item.topic}{" "}
                 </Text>
                 <Text className="text-gray-500 text-sm">
-                  {formatSearchCount(item.searchCount)} posts{" "}
+                  {formatSearchCount(item.postCount)} posts{" "}
                 </Text>
               </TouchableOpacity>
             ))
+          ) : (
+            <Text className="text-center text-gray-500 mt-4">
+              No trends found
+            </Text>
           )}
         </View>
       </ScrollView>

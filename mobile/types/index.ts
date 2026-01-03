@@ -89,4 +89,5 @@ export interface Trend {
   _id: string;
   topic: string;
   searchCount: number;
+  postCount: number;
 }

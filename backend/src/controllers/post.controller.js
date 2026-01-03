@@ -6,6 +6,44 @@ import cloudinary from "../config/claudinary.js";
 import Notification from "../models/notification.model.js";
 import Comment from "../models/comment.model.js";
 import { shouldSendNotification } from "./notification.controller.js";
+import Trend from "../models/trend.model.js";
+
+const updateTrendsFromContent = async (content) => {
+  if (!content) return;
+
+  const hashtagRegex = /#(\w+)/g;
+
+  const hashtags = content.match(hashtagRegex);
+
+  if (hashtags && hashtags.length > 0) {
+    const trendUpdates = hashtags.map((topic) => ({
+      updateOne: {
+        filter: { topic: topic.toLowerCase() },
+        update: { $inc: { postCount: 1 } },
+        upsert: true,
+      },
+    }));
+
+    await Trend.bulkWrite(trendUpdates);
+  }
+};
+
+const decrementTrendsFromContent = async (content) => {
+  if (!content) return;
+
+  const hashtagRegex = /#(\w+)/g;
+  const hashtags = content.match(hashtagRegex);
+
+  if (hashtags && hashtags.length > 0) {
+    const trendsUpdates = hashtags.map((topic) => ({
+      updateOne: {
+        filter: { topic: topic.toLowerCase() },
+        update: { $inc: { postCount: -1 } },
+      },
+    }));
+    await Trend.bulkWrite(trendsUpdates);
+  }
+};
 
 export const getPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find()
@@ -158,6 +196,8 @@ export const createPost = asyncHandler(async (req, res) => {
     image: imageUrl,
   });
 
+  await updateTrendsFromContent(content);
+
   res.status(201).json({ post });
 });
 
@@ -220,6 +260,9 @@ export const deletePost = asyncHandler(async (req, res) => {
       .status(403)
       .json({ error: "You can only delete your own posts" });
   }
+
+  // delete the count of trends before the post
+  await decrementTrendsFromContent(post.content);
 
   // delete all comments on this post
   await Comment.deleteMany({ post: postId });
@@ -318,6 +361,8 @@ export const quotePost = asyncHandler(async (req, res) => {
     content: content || "",
     originalPost: postId,
   });
+
+  await updateTrendsFromContent(content);
 
   await Post.findByIdAndUpdate(postId, {
     $push: { quotedBy: user._id },
