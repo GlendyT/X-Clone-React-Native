@@ -28,9 +28,12 @@ const PostCard = ({
 
   const hasReposted = useMemo(() => {
     const result =
-      post.repostedBy?.some(
-        (user) => user._id.toString() === currentUser._id.toString()
-      ) || false;
+      post.repostedBy?.some((userOrId) => {
+        if (typeof userOrId === "object" && userOrId._id) {
+          return userOrId._id.toString() === currentUser._id.toString();
+        }
+        return userOrId.toString() === currentUser._id.toString();
+      }) || false;
     return result;
   }, [post.repostedBy, currentUser._id]);
 

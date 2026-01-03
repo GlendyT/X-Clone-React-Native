@@ -3,7 +3,6 @@ import { useApiClient, postApi } from "@/utils/api";
 
 export const usePosts = (username?: string) => {
   const api = useApiClient();
-
   const queryClient = useQueryClient();
 
   const {
@@ -58,3 +57,4 @@ export const usePosts = (username?: string) => {
     checkIsLiked,
   };
 };
+

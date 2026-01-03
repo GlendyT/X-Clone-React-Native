@@ -53,7 +53,10 @@ export const getUserPosts = asyncHandler(async (req, res) => {
   const user = await User.findOne({ username });
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  const posts = await Post.find({ user: user._id })
+  const posts = await Post.find({
+    user: user._id,
+    isRepost: { $ne: true },
+  })
     .sort({ createdAt: -1 })
     .populate("user", "username firstName lastName profilePicture")
     .populate("repostedBy", "username firstName lastName profilePicture")
@@ -240,8 +243,6 @@ export const repostPost = asyncHandler(async (req, res) => {
     $push: { repostedBy: user._id },
   });
 
-  console.log(user._id);
-
   // crear notificacion si no es su propio post
   if (originalPost.user.toString() !== user._id.toString()) {
     await Notification.create({
@@ -253,4 +254,35 @@ export const repostPost = asyncHandler(async (req, res) => {
   }
 
   res.status(201).json({ message: "Repost created succesfully", repost });
+});
+
+export const getUserReposts = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+
+  const user = await User.findOne({ username });
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  const reposts = await Post.find({
+    user: user._id,
+    isRepost: true,
+  })
+    .sort({ createdAt: -1 })
+    .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username firstName lastName profilePicture")
+    .populate({
+      path: "comments",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    })
+    .populate({
+      path: "originalPost",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    });
+
+  res.status(200).json({ posts: reposts });
 });
