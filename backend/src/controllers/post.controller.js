@@ -13,10 +13,21 @@ export const getPosts = asyncHandler(async (req, res) => {
     .populate("repostedBy", "username firstName lastName profilePicture")
     .populate({
       path: "comments",
-      populate: {
-        path: "user",
-        select: "username firstName lastName profilePicture",
-      },
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
     })
     .populate({
       path: "originalPost",
@@ -36,10 +47,21 @@ export const getPost = asyncHandler(async (req, res) => {
     .populate("user", "username firstName lastName profilePicture")
     .populate({
       path: "comments",
-      populate: {
-        path: "user",
-        select: "username firstName lastName profilePicture",
-      },
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
     });
 
   if (!post) return res.status(404).json({ error: "Post not found" });
@@ -62,10 +84,21 @@ export const getUserPosts = asyncHandler(async (req, res) => {
     .populate("repostedBy", "username firstName lastName profilePicture")
     .populate({
       path: "comments",
-      populate: {
-        path: "user",
-        select: "username firstName lastName profilePicture",
-      },
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
     })
     .populate({
       path: "originalPost",
@@ -271,10 +304,21 @@ export const getUserReposts = asyncHandler(async (req, res) => {
     .populate("repostedBy", "username firstName lastName profilePicture")
     .populate({
       path: "comments",
-      populate: {
-        path: "user",
-        select: "username firstName lastName profilePicture",
-      },
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
     })
     .populate({
       path: "originalPost",

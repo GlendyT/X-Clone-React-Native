@@ -12,8 +12,7 @@ import React from "react";
 import { Post } from "@/types";
 import { useComments } from "@/hooks/useComments";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { formatNumber } from "@/utils/formatters";
+import CommentItem from "./CommentItem";
 
 interface CommentsModalProps {
   selectedPost: Post;
@@ -28,6 +27,8 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
     isCreatingComment,
     deleteComment,
     toggleLikeComment,
+    createReply,
+    isCreatingReply,
   } = useComments();
   const { currentUser } = useCurrentUser();
 
@@ -35,6 +36,11 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
     onClose();
     setCommentText("");
   };
+
+  if (!currentUser) {
+    return null; // o un loading spinner
+  }
+
   return (
     <Modal
       visible={!!selectedPost}
@@ -88,89 +94,21 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
           </View>
 
           {/*COMMENTS LIST */}
-          {selectedPost.comments?.map((comment) => (
-            <View
-              key={comment._id}
-              className="border-b border-gray-100 bg-white p-4 flex-1"
-            >
-              {selectedPost.comments && selectedPost.comments.length > 0 ? (
-                <View className="flex-row">
-                  <Image
-                    source={{ uri: comment.user.profilePicture }}
-                    className="w-10 h-10 rounded-full mr-3"
-                  />
 
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between mb-1">
-                      <View className="flex-row items-center">
-                        <Text className="font-bold text-gray-900 mr-1">
-                          {comment.user.firstName} {comment.user.lastName}
-                        </Text>
-                        <Text className="text-gray-500 text-sm ml-1">
-                          @{comment.user.username}
-                        </Text>
-                      </View>
-
-                      {(comment.user._id === currentUser._id ||
-                        selectedPost.user._id === currentUser?._id) && (
-                        <TouchableOpacity
-                          onPress={() => deleteComment(comment._id)}
-                        >
-                          <Feather name="trash" size={18} color={"#ef4444"} />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-
-                    <Text className="text-gray-900 text-base leading-5 mb-2">
-                      {comment.content}
-                    </Text>
-
-                    <View className="flex-row items-center justify-between max-w-xs ">
-                      <TouchableOpacity>
-                        <Feather
-                          name="message-circle"
-                          size={18}
-                          color={"#657786"}
-                        />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity className="flex-row items-center">
-                        <Feather name="repeat" size={18} color={"#657786"} />
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        className="flex flex-row items-center gap-1"
-                        onPress={() => toggleLikeComment(comment._id)}
-                      >
-                        <Ionicons
-                          name={
-                            comment.likes?.includes(currentUser?._id)
-                              ? "heart"
-                              : "heart-outline"
-                          }
-                          size={16}
-                          color={
-                            comment.likes?.includes(currentUser?._id)
-                              ? "#ef4444"
-                              : "#6b7280"
-                          }
-                        />
-                        {comment.likes.length > 0 && (
-                          <Text className="text-xs text-gray-500 ml-1">
-                            {comment.likes.length}
-                          </Text>
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              ) : (
-                <View className="p-4 text-center">
-                  <Text className="text-gray-500 ">No comments yet</Text>
-                </View>
-              )}
-            </View>
-          ))}
+          {selectedPost.comments?.map((comment) => {
+            return (
+              <CommentItem
+                key={comment._id}
+                comment={comment}
+                currentUser={currentUser}
+                postUserId={selectedPost.user._id}
+                onDelete={deleteComment}
+                onToggleLike={toggleLikeComment}
+                onReply={createReply}
+                isCreatingReply={isCreatingReply}
+              />
+            );
+          })}
 
           {/*ADD COMMENT INPUT */}
           <View className="p-4 border-t border-gray-100">
