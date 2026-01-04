@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
 import { AntDesign, Feather } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useRepost } from "@/hooks/useReposts";
 import QuoteModal from "./QuoteModal";
 
@@ -30,6 +30,24 @@ const PostCard = ({
   const isOwnPost = displayPost.user._id === currentUser._id;
   const { repost, isReposting } = useRepost();
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  // Calcular isLiked localmente basado en los datos del post
+  const computedIsLiked = useMemo(() => {
+    if (!currentUser || !currentUser._id || !displayPost.likes || !Array.isArray(displayPost.likes)) {
+      return isLiked || false;
+    }
+    const userId = currentUser._id;
+    return displayPost.likes.some((like: any) => {
+      if (!like) return false;
+      if (typeof like === "string") {
+        return like === userId;
+      }
+      if (typeof like === "object" && like?._id) {
+        return like._id === userId;
+      }
+      return false;
+    });
+  }, [displayPost.likes, currentUser, isLiked]);
 
   const hasReposted = useMemo(() => {
     const targetPost = isRepost ? post.originalPost : post;
@@ -139,7 +157,16 @@ const PostCard = ({
             <Text className="text-gray-900 text-base leading-5 mb-3">
               {displayPost.content.split(/(#\w+)/g).map((part, index) =>
                 part.startsWith("#") ? (
-                  <Text key={index} className="text-blue-500">
+                  <Text
+                    key={index}
+                    className="text-blue-500"
+                    onPress={() =>
+                      router.push({
+                        pathname: "/search/[hashtag]",
+                        params: { hashtag: part.substring(1) },
+                      })
+                    }
+                  >
                     {part}
                   </Text>
                 ) : (
@@ -173,7 +200,16 @@ const PostCard = ({
                     .split(/(#\w+)/g)
                     .map((part, index) =>
                       part.startsWith("#") ? (
-                        <Text key={index} className="text-blue-500">
+                        <Text
+                          key={index}
+                          className="text-blue-500"
+                          onPress={() =>
+                            router.push({
+                              pathname: "/search/[hashtag]",
+                              params: { hashtag: part.substring(1) },
+                            })
+                          }
+                        >
                           {part}
                         </Text>
                       ) : (
@@ -233,14 +269,14 @@ const PostCard = ({
               className="flex-row items-center"
               onPress={() => onLike(displayPost._id)}
             >
-              {isLiked ? (
+              {computedIsLiked ? (
                 <AntDesign name="heart" size={18} color={"#E0245E"} />
               ) : (
                 <Feather name="heart" size={18} color={"#657786"} />
               )}
 
               <Text
-                className={`text-sm ml-2 ${isLiked ? "text-red-500" : "text-gray-500"}`}
+                className={`text-sm ml-2 ${computedIsLiked ? "text-red-500" : "text-gray-500"}`}
               >
                 {formatNumber(displayPost.likes.length || 0)}
               </Text>

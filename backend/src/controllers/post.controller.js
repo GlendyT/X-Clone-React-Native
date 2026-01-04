@@ -35,13 +35,13 @@ const decrementTrendsFromContent = async (content) => {
   const hashtags = content.match(hashtagRegex);
 
   if (hashtags && hashtags.length > 0) {
-    const trendsUpdates = hashtags.map((topic) => ({
+    const trendUpdates = hashtags.map((topic) => ({
       updateOne: {
         filter: { topic: topic.toLowerCase() },
         update: { $inc: { postCount: -1 } },
       },
     }));
-    await Trend.bulkWrite(trendsUpdates);
+    await Trend.bulkWrite(trendUpdates);
   }
 };
 
@@ -215,7 +215,6 @@ export const likePost = asyncHandler(async (req, res) => {
 
   if (isLiked) {
     //unlike
-
     await Post.findByIdAndUpdate(postId, {
       $pull: { likes: user._id },
     });
@@ -240,8 +239,39 @@ export const likePost = asyncHandler(async (req, res) => {
     }
   }
 
+  // Fetch and return the updated post
+  const updatedPost = await Post.findById(postId)
+    .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username firstName lastName profilePicture")
+    .populate({
+      path: "comments",
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
+    })
+    .populate({
+      path: "originalPost",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    });
+
   res.status(200).json({
     message: isLiked ? "Post unliked succesfully" : "Post liked successfully",
+    post: updatedPost,
   });
 });
 
@@ -477,4 +507,47 @@ export const getUserLikedPosts = asyncHandler(async (req, res) => {
     });
 
   res.status(200).json({ posts: likedPosts });
+});
+
+export const searchPostsByHashtag = asyncHandler(async (req, res) => {
+  const { hashtag } = req.params;
+
+  if (!hashtag) {
+    return res.status(400).json({ error: "Hashtag is required" });
+  }
+
+  const posts = await Post.find({
+    content: { $regex: `#${hashtag}`, $options: "i" },
+  })
+    .select("+likes")
+    .sort({ createdAt: -1 })
+    .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username firstName lastName profilePicture")
+    .populate({
+      path: "comments",
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
+    })
+    .populate({
+      path: "originalPost",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    });
+
+  res.status(200).json({ posts });
 });
