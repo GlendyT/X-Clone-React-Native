@@ -13,6 +13,8 @@ export const useRepost = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["userReposts"] });
+      queryClient.invalidateQueries({ queryKey: ["userPosts"] });
 
       const message = data.message || "Action completed succesfully";
       Alert.alert("Success", message);

@@ -66,6 +66,8 @@ export const postApi = {
     api.delete(`/posts/${postId}`),
   repostPost: (api: AxiosInstance, postId: string) =>
     api.post(`/posts/${postId}/repost`),
+  getUserLikedPosts: (api: AxiosInstance, username: string) =>
+    api.get(`/posts/user/${username}/likes`),
 };
 
 export const commentApi = {

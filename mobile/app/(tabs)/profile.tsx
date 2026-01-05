@@ -9,10 +9,13 @@ import EditProfileModal from "@/components/EditProfileModal";
 import ProfileLayout from "@/components/ProfileLayout";
 import { useUserReposts } from "@/hooks/useReposts";
 import RepostsList from "@/components/RepostsList";
+import LikesList from "@/components/LikesList";
 
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
-  const [activeTab, setActiveTab] = useState<"posts" | "reposts">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes">(
+    "posts"
+  );
 
   const { refetch: refetchPosts, isLoading: isRefetching } = usePosts(
     currentUser?.username || ""
@@ -54,7 +57,7 @@ const ProfileScreen = () => {
       isRefetching={isRefetching}
       onRefresh={() => {
         refetchPosts();
-        refetchReposts()
+        refetchReposts();
         refetchProfile();
       }}
       headerRight={<SignOutButton />}
@@ -73,11 +76,14 @@ const ProfileScreen = () => {
       showTabs={true}
       activeTab={activeTab}
       onTabChange={setActiveTab}
+      
     >
       {activeTab === "posts" ? (
         <PostsList username={currentUser?.username} />
-      ) : (
+      ) : activeTab === "reposts" ? (
         <RepostsList username={currentUser?.username || ""} />
+      ) : (
+        <LikesList username={currentUser?.username || ""} />
       )}
       <EditProfileModal
         isVisible={isEditModalVisible}

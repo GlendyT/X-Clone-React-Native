@@ -23,19 +23,25 @@ const PostCard = ({
   currentUser,
   onComment,
 }: PostCardProps) => {
-  const isOwnPost = post.user._id === currentUser._id;
+  const displayPost =
+    post.isRepost && post.originalPost ? post.originalPost : post;
+  const isRepost = post.isRepost && post.originalPost;
+  const isOwnPost = displayPost.user._id === currentUser._id;
   const { repost, isReposting } = useRepost();
 
   const hasReposted = useMemo(() => {
+    const targetPost = isRepost ? post.originalPost : post;
+
+    if (!targetPost) return false;
     const result =
-      post.repostedBy?.some((userOrId) => {
+      targetPost.repostedBy?.some((userOrId) => {
         if (typeof userOrId === "object" && userOrId._id) {
           return userOrId._id.toString() === currentUser._id.toString();
         }
         return userOrId.toString() === currentUser._id.toString();
       }) || false;
     return result;
-  }, [post.repostedBy, currentUser._id]);
+  }, [post, currentUser._id, isRepost]);
 
   const router = useRouter();
 
@@ -57,16 +63,25 @@ const PostCard = ({
     if (isOwnPost) {
       router.push("/(tabs)/profile");
     } else {
-      router.push(`/profile/${post.user._id}` as any);
+      router.push(`/profile/${displayPost.user._id}` as any);
     }
   };
 
   return (
     <View className="border-b border-gray-100 bg-white">
+      {/*Mostrar indicador de repost */}
+      {isRepost && (
+        <View className="flex-row items-center px-4 mt-2">
+          <Feather name="repeat" size={16} color={"#657786"} />
+          <Text className="text-gray-500 text-sm ml-2">
+            {post.user.firstName} {post.user.lastName} reposted
+          </Text>
+        </View>
+      )}
       <View className="flex-row p-4">
         <TouchableOpacity onPress={handleProfilePress}>
           <Image
-            source={{ uri: post.user.profilePicture || "" }}
+            source={{ uri: displayPost.user.profilePicture || "" }}
             className="w-12 h-12 rounded-full mr-3"
           />
         </TouchableOpacity>
@@ -78,11 +93,12 @@ const PostCard = ({
               className="flex-row items-center"
             >
               <Text className="font-bold text-gray-900 mr-1">
-                {post.user.firstName} {post.user.lastName}
+                {displayPost.user.firstName} {displayPost.user.lastName}
               </Text>
 
               <Text className="font-bold text-gray-500 ">
-                @{post.user.username} * {formatDate(post.createdAt)}
+                @{displayPost.user.username} *{" "}
+                {formatDate(displayPost.createdAt)}
               </Text>
             </TouchableOpacity>
 
@@ -93,15 +109,15 @@ const PostCard = ({
             )}
           </View>
 
-          {post.content && (
+          {displayPost.content && (
             <Text className="text-gray-900 text-base leading-5 mb-3">
-              {post.content}
+              {displayPost.content}
             </Text>
           )}
 
-          {post.image && (
+          {displayPost.image && (
             <Image
-              source={{ uri: post.image }}
+              source={{ uri: displayPost.image }}
               className="w-full h-48 rounded-2xl mb-3"
               resizeMode="cover"
             />
@@ -110,17 +126,17 @@ const PostCard = ({
           <View className="flex-row justify-between max-w-xs">
             <TouchableOpacity
               className="flex-row items-center"
-              onPress={() => onComment(post)}
+              onPress={() => onComment(displayPost)}
             >
               <Feather name="message-circle" size={18} color={"#657786"} />
               <Text className="text-gray-500 text-sm ml-2">
-                {formatNumber(post.comments?.length || 0)}
+                {formatNumber(displayPost.comments?.length || 0)}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="flex-row items-center"
-              onPress={() => repost(post._id)}
+              onPress={() => repost(displayPost._id)}
               disabled={isReposting}
             >
               <Feather
@@ -131,13 +147,13 @@ const PostCard = ({
               <Text
                 className={`text-sm ml-2 ${hasReposted ? "text-blue-500" : "text-gray-500"}`}
               >
-                {formatNumber(post.repostedBy?.length || 0)}
+                {formatNumber(displayPost.repostedBy?.length || 0)}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="flex-row items-center"
-              onPress={() => onLike(post._id)}
+              onPress={() => onLike(displayPost._id)}
             >
               {isLiked ? (
                 <AntDesign name="heart" size={18} color={"#E0245E"} />
@@ -148,7 +164,7 @@ const PostCard = ({
               <Text
                 className={`text-sm ml-2 ${isLiked ? "text-red-500" : "text-gray-500"}`}
               >
-                {formatNumber(post.likes.length || 0)}
+                {formatNumber(displayPost.likes.length || 0)}
               </Text>
             </TouchableOpacity>
 
