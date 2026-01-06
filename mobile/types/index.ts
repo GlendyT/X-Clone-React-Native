@@ -8,8 +8,9 @@ export interface User {
   bio?: string;
   location?: string;
   createdAt?: string;
-  following?: string[];
-  followers?: string[];
+  followingCount?: number;
+  followersCount?: number;
+  isFollowing?: boolean;
 }
 
 export interface Comment {
