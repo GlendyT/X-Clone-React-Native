@@ -23,8 +23,19 @@ const SearchScreen = () => {
     handleSearchSubmit,
     refetchTrends,
     isRefetchingTrends,
+    clearSearch,
+    hasSearched,
   } = useTrends();
-  const router = useRouter()
+  const router = useRouter();
+
+  const handleTrendClick = (topic: string) => {
+    const cleanTopic = topic.replace("#", "");
+    router.push({
+      pathname: "/search/[hashtag]",
+      params: { hashtag: cleanTopic },
+    });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/*HEADER */}
@@ -42,7 +53,7 @@ const SearchScreen = () => {
           />
 
           {searchTerm ? (
-            <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
+            <TouchableOpacity onPress={clearSearch} className="p-1">
               <Feather name="x" size={18} color={"#657786"} />
             </TouchableOpacity>
           ) : null}
@@ -60,7 +71,9 @@ const SearchScreen = () => {
       >
         <View className="p-4">
           <Text className="text-xl font-bold text-gray-900 mb-4">
-            Trends for you
+            {hasSearched && searchTerm
+              ? `Results for "${searchTerm}"`
+              : "Trends for you"}
           </Text>
           {isLoadingTrends ? (
             <ActivityIndicator
@@ -73,30 +86,24 @@ const SearchScreen = () => {
               <TouchableOpacity
                 key={item._id}
                 className="py-3 border-b border-gray-100"
+                onPress={() => handleTrendClick(item.topic)}
               >
                 <Text className="text-gray-500 text-sm">
                   Trending in your region
                 </Text>
-                <Text
-                  className="font-bold text-blue-500 text-lg"
-                  onPress={() =>
-                    router.push({
-                      pathname: "/search/[hashtag]",
-                      params: { hashtag: item.topic.replace("#", "") },
-                    })
-                  }
-                >
-                  {" "}
-                  {item.topic}{" "}
+                <Text className="font-bold text-blue-500 text-lg">
+                  {item.topic}
                 </Text>
                 <Text className="text-gray-500 text-sm">
-                  {formatSearchCount(item.postCount)} posts{" "}
+                  {formatSearchCount(item.postCount)} posts
                 </Text>
               </TouchableOpacity>
             ))
           ) : (
             <Text className="text-center text-gray-500 mt-4">
-              No trends found
+              {hasSearched && searchTerm
+                ? "No results found"
+                : "No trends found"}
             </Text>
           )}
         </View>
