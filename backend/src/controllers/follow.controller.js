@@ -6,9 +6,12 @@ import Notification from "../models/notification.model.js";
 
 export const getFollowers = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { userId } = getAuth(req);
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
+
+  const currentUser = await User.findOne({ clerkId: userId });
 
   const followersData = await Follow.find({ following: id })
     .skip(skip)
@@ -20,14 +23,30 @@ export const getFollowers = asyncHandler(async (req, res) => {
 
   const followers = followersData.map((f) => f.follower);
 
-  res.status(200).json(followers);
+  const followersWithStatus = await Promise.all(
+    followers.map(async (follower) => {
+      const isFollowing = await Follow.exists({
+        follower: currentUser._id,
+        following: follower._id,
+      });
+      return {
+        ...follower.toObject(),
+        isFollowing: !!isFollowing,
+      };
+    })
+  );
+
+  res.status(200).json(followersWithStatus);
 });
 
 export const getFollowing = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { userId } = getAuth(req);
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
+
+  const currentUser = await User.findOne({ clerkId: userId });
 
   const followingData = await Follow.find({ follower: id })
     .skip(skip)
@@ -39,7 +58,20 @@ export const getFollowing = asyncHandler(async (req, res) => {
 
   const following = followingData.map((f) => f.following);
 
-  res.status(200).json(following);
+  const followingWithStatus = await Promise.all(
+    following.map(async (user) => {
+      const isFollowing = await Follow.exists({
+        follower: currentUser._id,
+        following: user._id,
+      });
+      return {
+        ...user.toObject(),
+        isFollowing: !!isFollowing,
+      };
+    })
+  );
+
+  res.status(200).json(followingWithStatus);
 });
 
 export const followUnfollowUser = asyncHandler(async (req, res) => {
@@ -61,7 +93,7 @@ export const followUnfollowUser = asyncHandler(async (req, res) => {
     follower: currentUser._id,
     following: id,
   });
-  console.log(existingFollow)
+  console.log(existingFollow);
 
   if (existingFollow) {
     await Follow.findByIdAndDelete(existingFollow._id);
