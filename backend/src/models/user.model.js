@@ -50,6 +50,34 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    notificationSettings: {
+      enabled: {
+        type: Boolean,
+        default: true,
+      },
+      types: {
+        follow: {
+          type: Boolean,
+          default: true,
+        },
+        like: {
+          type: Boolean,
+          default: true,
+        },
+        comment: {
+          type: Boolean,
+          default: true,
+        },
+        repost: {
+          type: Boolean,
+          default: true,
+        },
+        reply: {
+          type: Boolean,
+          default: true,
+        },
+      },
+    },
   },
   {
     timestamps: true,

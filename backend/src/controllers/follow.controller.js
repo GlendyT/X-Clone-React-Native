@@ -3,6 +3,7 @@ import Follow from "../models/follow.model.js";
 import User from "../models/user.model.js";
 import { getAuth } from "@clerk/express";
 import Notification from "../models/notification.model.js";
+import { shouldSendNotification } from "./notification.controller.js";
 
 export const getFollowers = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -113,11 +114,15 @@ export const followUnfollowUser = asyncHandler(async (req, res) => {
     });
     await User.findByIdAndUpdate(id, { $inc: { followersCount: 1 } });
 
-    await Notification.create({
-      from: currentUser._id,
-      to: id,
-      type: "follow",
-    });
+    const shouldNotify = await shouldSendNotification(id, "follow");
+
+    if (shouldNotify) {
+      await Notification.create({
+        from: currentUser._id,
+        to: id,
+        type: "follow",
+      });
+    }
 
     res.status(200).json({ message: "User followed successfully" });
   }

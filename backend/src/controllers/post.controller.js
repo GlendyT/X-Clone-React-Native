@@ -5,6 +5,7 @@ import { getAuth } from "@clerk/express";
 import cloudinary from "../config/claudinary.js";
 import Notification from "../models/notification.model.js";
 import Comment from "../models/comment.model.js";
+import { shouldSendNotification } from "./notification.controller.js";
 
 export const getPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find()
@@ -186,12 +187,16 @@ export const likePost = asyncHandler(async (req, res) => {
 
     // create notification if not liking ow post
     if (post.user.toString() !== user._id.toString()) {
-      await Notification.create({
-        from: user._id,
-        to: post.user,
-        type: "like",
-        post: postId,
-      });
+      const shouldNotify = await shouldSendNotification(post.user, "like");
+
+      if (shouldNotify) {
+        await Notification.create({
+          from: user._id,
+          to: post.user,
+          type: "like",
+          post: postId,
+        });
+      }
     }
   }
 
@@ -278,12 +283,16 @@ export const repostPost = asyncHandler(async (req, res) => {
 
   // crear notificacion si no es su propio post
   if (originalPost.user.toString() !== user._id.toString()) {
-    await Notification.create({
-      from: user._id,
-      to: originalPost.user,
-      type: "repost",
-      post: postId,
-    });
+    const shouldNotify = await shouldSendNotification(originalPost.user);
+
+    if (shouldNotify) {
+      await Notification.create({
+        from: user._id,
+        to: originalPost.user,
+        type: "repost",
+        post: postId,
+      });
+    }
   }
 
   res.status(201).json({ message: "Repost created succesfully", repost });
@@ -340,8 +349,13 @@ export const getUserLikedPosts = asyncHandler(async (req, res) => {
 
   // Verificar que el usuario autenticado es el dueño del perfil
   const authenticatedUser = await User.findOne({ clerkId: userId });
-  if (!authenticatedUser || authenticatedUser._id.toString() !== user._id.toString()) {
-    return res.status(403).json({ error: "Not authorized to view these likes" });
+  if (
+    !authenticatedUser ||
+    authenticatedUser._id.toString() !== user._id.toString()
+  ) {
+    return res
+      .status(403)
+      .json({ error: "Not authorized to view these likes" });
   }
 
   const likedPosts = await Post.find({

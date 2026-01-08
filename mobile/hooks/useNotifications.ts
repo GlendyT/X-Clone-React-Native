@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useApiClient } from "@/utils/api";
+import { useApiClient, notificationApi } from "@/utils/api";
 
 export const useNotifications = () => {
   const api = useApiClient();
@@ -28,6 +28,31 @@ export const useNotifications = () => {
     deleteNotificationMutation.mutate(notificationId);
   };
 
+  const {
+    data: settingsData,
+    isLoading: isLoadingSettings,
+    error: settingsError,
+    refetch: refetchSettings,
+  } = useQuery({
+    queryKey: ["notificationSettings"],
+    queryFn: () =>
+      notificationApi.getSettings(api).then((res) => res.data.settings),
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (newSettings: any) =>
+      notificationApi.updateSettings(api, newSettings),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notificationSettings"] }),
+    onError: (error: any) => {
+      console.error("Error updating settings", error);
+    },
+  });
+
+  const updateSettings = (newSettings: any) => {
+    updateSettingsMutation.mutate(newSettings);
+  };
+
   return {
     notifications: notificationsData || [],
     isLoading,
@@ -36,5 +61,12 @@ export const useNotifications = () => {
     isRefetching,
     deleteNotification,
     isDeletingNotification: deleteNotificationMutation.isPending,
+
+    notificationSettings: settingsData,
+    isLoadingSettings,
+    settingsError: updateSettingsMutation.error,
+    refetchSettings,
+    updateSettings,
+    isUpdatingSettings: updateSettingsMutation.isPending,
   };
 };

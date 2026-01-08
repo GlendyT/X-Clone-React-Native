@@ -88,3 +88,10 @@ export const followApi = {
   followUser: (api: AxiosInstance, targetUserId: string) =>
     api.post(`/users/${targetUserId}/follow`),
 };
+
+export const notificationApi = {
+  getSettings: (api: AxiosInstance) => api.get("/notifications/settings"),
+  updateSettings: (api: AxiosInstance, settings: any) =>
+    api.put("/notifications/settings", settings),
+};
+
