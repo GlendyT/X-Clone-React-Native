@@ -42,6 +42,12 @@ const postSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    quotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ]
   },
   {
     timestamps: true,

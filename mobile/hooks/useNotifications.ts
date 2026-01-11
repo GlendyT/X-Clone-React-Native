@@ -31,7 +31,6 @@ export const useNotifications = () => {
   const {
     data: settingsData,
     isLoading: isLoadingSettings,
-    error: settingsError,
     refetch: refetchSettings,
   } = useQuery({
     queryKey: ["notificationSettings"],

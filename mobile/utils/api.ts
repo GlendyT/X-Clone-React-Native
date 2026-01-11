@@ -64,6 +64,8 @@ export const postApi = {
     api.delete(`/posts/${postId}`),
   repostPost: (api: AxiosInstance, postId: string) =>
     api.post(`/posts/${postId}/repost`),
+  quotePost: (api: AxiosInstance, postId: string, content: string) =>
+    api.post(`/posts/${postId}/quote`, { content }),
   getUserLikedPosts: (api: AxiosInstance, username: string) =>
     api.get(`/posts/user/${username}/likes`),
 };
@@ -94,4 +96,3 @@ export const notificationApi = {
   updateSettings: (api: AxiosInstance, settings: any) =>
     api.put("/notifications/settings", settings),
 };
-

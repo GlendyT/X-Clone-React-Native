@@ -22,6 +22,7 @@ const PostsList = ({ username }: { username?: string }) => {
     ? posts.find((p: Post) => p._id === selectedPostId)
     : null;
 
+
   if (isLoading) {
     return (
       <View className="p-8 items-center">
@@ -66,7 +67,6 @@ const PostsList = ({ username }: { username?: string }) => {
           isLiked={checkIsLiked(post.likes, currentUser)}
         />
       ))}
-     
 
       <CommentsModal
         selectedPost={selectedPost}

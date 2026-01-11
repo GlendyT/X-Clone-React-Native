@@ -1,10 +1,11 @@
 import { View, Text, Alert, Image, TouchableOpacity } from "react-native";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRepost } from "@/hooks/useReposts";
+import QuoteModal from "./QuoteModal";
 
 interface PostCardProps {
   post: Post;
@@ -28,6 +29,7 @@ const PostCard = ({
   const isRepost = post.isRepost && post.originalPost;
   const isOwnPost = displayPost.user._id === currentUser._id;
   const { repost, isReposting } = useRepost();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const hasReposted = useMemo(() => {
     const targetPost = isRepost ? post.originalPost : post;
@@ -67,9 +69,33 @@ const PostCard = ({
     }
   };
 
+  const handleRepostPress = () => {
+    Alert.alert("Repost", "Select an option", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Repost",
+        onPress: () => repost(displayPost._id),
+      },
+      {
+        text: "Quote",
+        onPress: () => setIsModalVisible(true),
+      },
+    ]);
+  };
+
   return (
     <View className="border-b border-gray-100 bg-white">
       {/*Mostrar indicador de repost */}
+
+      <QuoteModal
+        modalVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        post={displayPost}
+      />
+
       {isRepost && (
         <View className="flex-row items-center px-4 mt-2">
           <Feather name="repeat" size={16} color={"#657786"} />
@@ -115,6 +141,40 @@ const PostCard = ({
             </Text>
           )}
 
+          {/*QUOTE POST */}
+          {displayPost.originalPost && displayPost.originalPost.user && (
+            <View className="border border-gray-200 rounded-2xl p-3 mb-3 overflow-hidden">
+              <View className="flex-row items-center mb-2">
+                <Image
+                  source={{ uri: displayPost.originalPost.user.profilePicture }}
+                  className="w-5 h-5 rounded-full mr-2"
+                />
+                <Text className="font-bold text-gray-900 text-sm mr-1">
+                  {displayPost.originalPost.user.firstName}
+                  {displayPost.originalPost.user.lastName}
+                </Text>
+                <Text className="text-gray-500 text-sm">
+                  @{displayPost.originalPost.user.username} *
+                  {formatDate(displayPost.originalPost.createdAt)}
+                </Text>
+              </View>
+
+              {displayPost.originalPost.content && (
+                <Text className="text-gray-900 text-sm mb-2" numberOfLines={3}>
+                  {displayPost.originalPost.content}
+                </Text>
+              )}
+
+              {displayPost.originalPost.image && (
+                <Image
+                  source={{ uri: displayPost.originalPost.image }}
+                  className="w-full h-40 rounded-xl"
+                  resizeMode="cover"
+                />
+              )}
+            </View>
+          )}
+
           {displayPost.image && (
             <Image
               source={{ uri: displayPost.image }}
@@ -136,7 +196,7 @@ const PostCard = ({
 
             <TouchableOpacity
               className="flex-row items-center"
-              onPress={() => repost(displayPost._id)}
+              onPress={handleRepostPress}
               disabled={isReposting}
             >
               <Feather
@@ -179,3 +239,5 @@ const PostCard = ({
 };
 
 export default PostCard;
+
+/**      */
