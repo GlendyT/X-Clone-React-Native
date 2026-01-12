@@ -1,15 +1,25 @@
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import {
+  Image,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SignOutButton from "@/components/SignOutButton";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Entypo, Feather } from "@expo/vector-icons";
 import PostComposer from "@/components/PostComposer";
 import PostsList from "@/components/PostsList";
 import { useUserSync } from "@/hooks/useUserSync";
 import { usePosts } from "@/hooks/usePosts";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import ProfileSidebar from "@/components/ProfileSidebar";
 
 const HomeScreen = () => {
   const [isRefetching, setIsRefetching] = useState(false);
+  const [showPostComposer, setShowPostComposer] = useState(false);
+  const [showProfileSidebar, setShowProfileSidebar] = useState(false);
   const { refetch: refetchPosts } = usePosts();
 
   const handlePullToRefresh = async () => {
@@ -20,12 +30,25 @@ const HomeScreen = () => {
     setIsRefetching(false);
   };
   useUserSync();
+
+  const { currentUser } = useCurrentUser();
+  console.log("imagen aqui", currentUser.profilePicture);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-100">
-        <Ionicons name="logo-twitter" size={24} color={"#1DA1F2"} />
+        {showProfileSidebar && (
+          <ProfileSidebar onClose={() => setShowProfileSidebar(false)} />
+        )}
+        <TouchableOpacity onPress={() => setShowProfileSidebar(true)}>
+          <Image
+            source={{ uri: currentUser.profilePicture || "" }}
+            className="w-10 h-10 rounded-full"
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
         <Text className="text-xl font-bold text-gray-900">Home</Text>
-        <View />
+        <Entypo name="dots-three-vertical" size={24} color="black" />
       </View>
 
       <ScrollView
@@ -40,9 +63,19 @@ const HomeScreen = () => {
           />
         }
       >
-        <PostComposer />
         <PostsList />
       </ScrollView>
+
+      {showPostComposer && (
+        <PostComposer onClose={() => setShowPostComposer(false)} />
+      )}
+      <TouchableOpacity
+        className="absolute bg-purple-800 rounded-full p-4 items-end-center justify-center"
+        style={{ bottom: 10, right: 20 }}
+        onPress={() => setShowPostComposer(true)}
+      >
+        <AntDesign name="plus" size={24} color="white" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
