@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFollow } from "@/hooks/useFollow";
 import ProfileLayout from "@/components/ProfileLayout";
 import RepostsList from "@/components/RepostsList";
+import { useConversations } from "@/hooks/useMessages";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -35,7 +36,14 @@ const UserProfile = () => {
   const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes">(
     "posts"
   );
+  const { isCreatingConversation } = useConversations();
 
+  const handleMessageUser = () => {
+    router.push({
+      pathname: "/conversation/[id]",
+      params: { id: user?._id },
+    });
+  };
   if (isLoading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
@@ -71,17 +79,25 @@ const UserProfile = () => {
       }
       actionButton={
         currentUser?._id !== user._id ? (
-          <TouchableOpacity
-            onPress={() => followUser(user._id)}
-            disabled={isFollowPending}
-            className={`px-6 py-2 rounded-full ${isFollowing ? "bg-black" : "border border-gray-300 bg-white"}`}
-          >
-            <Text
-              className={`font-semibold ${isFollowing ? "text-white" : "text-gray-900"}`}
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={handleMessageUser}
+              className="px-5 py-2 rounded-full border border-gray-300 bg-white"
             >
-              {isFollowing ? "Following" : "Follow"}
-            </Text>
-          </TouchableOpacity>
+              <Feather name="mail" size={20} color={"1DA1F2"} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => followUser(user._id)}
+              disabled={isFollowPending}
+              className={`px-6 py-2 rounded-full ${isFollowing ? "bg-black" : "border border-gray-300 bg-white"}`}
+            >
+              <Text
+                className={`font-semibold ${isFollowing ? "text-white" : "text-gray-900"}`}
+              >
+                {isFollowing ? "Following" : "Follow"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         ) : null
       }
       showTabs={true}

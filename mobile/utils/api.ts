@@ -96,3 +96,24 @@ export const notificationApi = {
   updateSettings: (api: AxiosInstance, settings: any) =>
     api.put("/notifications/settings", settings),
 };
+
+export const conversationApi = {
+  getConversations: (api: AxiosInstance) => api.get("/conversations"),
+  getOrCreateConversation: (api: AxiosInstance, otherUserId: string) =>
+    api.get(`/conversations/user/${otherUserId}`),
+  getMessages: (
+    api: AxiosInstance,
+    conversationId: string,
+    page = 1,
+    limit = 50
+  ) =>
+    api.get(
+      `/conversations/${conversationId}/messages?page=${page}&limit=${limit}`
+    ),
+  sendMessage: (api: AxiosInstance, conversationId: string, content: string) =>
+    api.post(`/conversations/${conversationId}/messages`, { content }),
+  markAsRead: (api: AxiosInstance, conversationId: string) =>
+    api.patch(`/conversations/${conversationId}/read`),
+  deleteConversation: (api: AxiosInstance, conversationId: string) =>
+    api.delete(`/conversations/${conversationId}`),
+};
