@@ -119,3 +119,9 @@ export const conversationApi = {
   deleteConversation: (api: AxiosInstance, conversationId: string) =>
     api.delete(`/conversations/${conversationId}`),
 };
+
+export const trendApi = {
+  getTrends: (api: AxiosInstance) => api.get("/trends"),
+  recordSearch: (api: AxiosInstance, searchTerm: string) =>
+    api.post("/trends", { searchTerm }),
+};

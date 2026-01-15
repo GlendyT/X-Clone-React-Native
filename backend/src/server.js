@@ -9,6 +9,7 @@ import commentRoutes from "./routes/comment.route.js";
 import notificationRoutes from "./routes/notification.route.js";
 import followRoutes from "./routes/follow.route.js";
 import conversationRoutes from "./routes/conversation.route.js";
+import trendRoutes from "./routes/trend.route.js";
 import { arcjetMiddleware } from "./middleware/arcjet.middlware.js";
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/conversations", conversationRoutes);
+app.use("/api/trends", trendRoutes)
 
 // error handling middleare
 app.use((err, req, res, next) => {

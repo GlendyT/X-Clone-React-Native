@@ -4,22 +4,22 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-
-//TODO: ADD THIS SCREEN AND MAKE IT ACTUALLY WORKING
-
-const TRENDIGN_TOPICS = [
-  { topic: "#ReactNative", tweets: "125k" },
-  { topic: "#Typescript", tweets: "89k" },
-  { topic: "#WebDevelopment", tweets: "234k" },
-  { topic: "#AI", tweets: "234k" },
-  { topic: "#TechNews", tweets: "98k" },
-];
+import { useTrends } from "@/hooks/useTrends";
+import { formatSearchCount } from "@/utils/formatters";
 
 const SearchScreen = () => {
+  const {
+    searchTerm,
+    setSearchTerm,
+    trends,
+    isLoadingTrends,
+    handleSearchSubmit,
+  } = useTrends();
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/*HEADER */}
@@ -27,29 +27,53 @@ const SearchScreen = () => {
         <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-3">
           <Feather name="search" size={20} color={"#657786"} />
           <TextInput
-            placeholder="Search Twitter"
+            placeholder="Search X"
             className="flex-1 ml-3 text-base"
             placeholderTextColor={"#657786"}
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            onSubmitEditing={handleSearchSubmit}
+            returnKeyType="search"
           />
+
+          {searchTerm ? (
+            <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
+              <Feather name="x" size={18} color={"#657786"} />
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
 
       <ScrollView className="flex-1">
         <View className="p-4">
           <Text className="text-xl font-bold text-gray-900 mb-4">
-            Trending for you
+            Trends for you
           </Text>
-          {TRENDIGN_TOPICS.map((item, index) => (
-            <TouchableOpacity key={index} className="py-3 border-6">
-              <Text className="text-gray-500 text-sm">Trending Technology</Text>
-              <Text className="font-bold text-gray-900 text-lg">
-                {item.topic}{" "}
-              </Text>
-              <Text className="text-gray-500 text-sm">
-                {item.tweets}Tweets{" "}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {isLoadingTrends ? (
+            <ActivityIndicator
+              size={"large"}
+              color={"#1DA1F2"}
+              className="mt-4"
+            />
+          ) : (
+            trends.map((item) => (
+              <TouchableOpacity
+                key={item._id}
+                className="py-3 border-b border-gray-100"
+              >
+                <Text className="text-gray-500 text-sm">
+                  Trending in your region
+                </Text>
+                <Text className="font-bold text-gray-900 text-lg">
+                  {" "}
+                  {item.topic}{" "}
+                </Text>
+                <Text className="text-gray-500 text-sm">
+                  {formatSearchCount(item.searchCount)} posts{" "}
+                </Text>
+              </TouchableOpacity>
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

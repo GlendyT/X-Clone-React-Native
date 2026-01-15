@@ -24,3 +24,10 @@ export const formatDate = (dateString: string): string => {
 
   return `${Math.floor(days / 7)}w`;
 };
+
+export const formatSearchCount = (count: number) => {
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}k`
+  }
+  return count.toString()
+}
