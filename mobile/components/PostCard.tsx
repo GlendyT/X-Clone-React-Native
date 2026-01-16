@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
 import { AntDesign, Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useRepost } from "@/hooks/useReposts";
 import QuoteModal from "./QuoteModal";
 
@@ -137,7 +137,15 @@ const PostCard = ({
 
           {displayPost.content && (
             <Text className="text-gray-900 text-base leading-5 mb-3">
-              {displayPost.content}
+              {displayPost.content.split(/(#\w+)/g).map((part, index) =>
+                part.startsWith("#") ? (
+                  <Text key={index} className="text-blue-500">
+                    {part}
+                  </Text>
+                ) : (
+                  part
+                )
+              )}
             </Text>
           )}
 
@@ -161,7 +169,17 @@ const PostCard = ({
 
               {displayPost.originalPost.content && (
                 <Text className="text-gray-900 text-sm mb-2" numberOfLines={3}>
-                  {displayPost.originalPost.content}
+                  {displayPost.originalPost.content
+                    .split(/(#\w+)/g)
+                    .map((part, index) =>
+                      part.startsWith("#") ? (
+                        <Text key={index} className="text-blue-500">
+                          {part}
+                        </Text>
+                      ) : (
+                        part
+                      )
+                    )}
                 </Text>
               )}
 
