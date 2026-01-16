@@ -162,7 +162,7 @@ const PostCard = ({
                     className="text-blue-500"
                     onPress={() =>
                       router.push({
-                        pathname: "/search/[hashtag]",
+                        pathname: "(modals)/search/[hashtag]",
                         params: { hashtag: part.substring(1) },
                       })
                     }
@@ -205,7 +205,7 @@ const PostCard = ({
                           className="text-blue-500"
                           onPress={() =>
                             router.push({
-                              pathname: "/search/[hashtag]",
+                              pathname: "(modals)/search/[hashtag]",
                               params: { hashtag: part.substring(1) },
                             })
                           }

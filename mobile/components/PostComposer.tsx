@@ -28,7 +28,7 @@ const PostComposer = ({ onClose }: PostComposerProps) => {
     removeImage,
     createPost,
   } = useCreatePost();
-  const { currentUser } = useCurrentUser();
+  const { currentUser, isLoading } = useCurrentUser();
 
   const { user } = useUser();
 
@@ -48,10 +48,14 @@ const PostComposer = ({ onClose }: PostComposerProps) => {
           <View />
         </View>
         <View className="flex-row">
-          <Image
-            source={{ uri: currentUser?.profilePicture || user?.imageUrl }}
-            className="w-12 h-12 rounded-full mr-3"
-          />
+          {isLoading || !currentUser ? (
+            <View className="w-12 h-12 rounded-full bg-gray-200 mr-3" />
+          ) : (
+            <Image
+              source={{ uri: currentUser.profilePicture || user?.imageUrl || "" }}
+              className="w-12 h-12 rounded-full mr-3"
+            />
+          )}
           <View className="flex-1">
             <TextInput
               className="text-gray-900 text-lg"

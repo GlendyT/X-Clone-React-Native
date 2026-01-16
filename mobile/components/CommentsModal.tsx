@@ -114,7 +114,7 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
           <View className="p-4 border-t border-gray-100">
             <View className="flex-row">
               <Image
-                source={{ uri: currentUser.profilePicture }}
+                source={{ uri: currentUser?.profilePicture || "" }}
                 className="size-10 rounded-full mr-3"
               />
 
