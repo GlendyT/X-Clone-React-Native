@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { useTrends } from "@/hooks/useTrends";
 import { formatSearchCount } from "@/utils/formatters";
+import { useRouter } from "expo-router";
 
 const SearchScreen = () => {
   const {
@@ -23,6 +24,7 @@ const SearchScreen = () => {
     refetchTrends,
     isRefetchingTrends,
   } = useTrends();
+  const router = useRouter()
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/*HEADER */}
@@ -75,7 +77,15 @@ const SearchScreen = () => {
                 <Text className="text-gray-500 text-sm">
                   Trending in your region
                 </Text>
-                <Text className="font-bold text-blue-500 text-lg">
+                <Text
+                  className="font-bold text-blue-500 text-lg"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/search/[hashtag]",
+                      params: { hashtag: item.topic.replace("#", "") },
+                    })
+                  }
+                >
                   {" "}
                   {item.topic}{" "}
                 </Text>

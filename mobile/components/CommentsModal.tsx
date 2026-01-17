@@ -15,7 +15,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import CommentItem from "./CommentItem";
 
 interface CommentsModalProps {
-  selectedPost: Post;
+  selectedPost: Post | null;
   onClose: () => void;
 }
 

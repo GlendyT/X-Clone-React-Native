@@ -10,6 +10,7 @@ import {
   likePost,
   repostPost,
   quotePost,
+  searchPostsByHashtag,
 } from "../controllers/post.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import upload from "../middleware/upload.middleware.js";
@@ -29,5 +30,6 @@ router.post("/:postId/repost", protectRoute, repostPost);
 router.post("/:postId/quote", protectRoute, quotePost);
 router.delete("/:postId", protectRoute, deletePost);
 router.get("/user/:username/likes", protectRoute, getUserLikedPosts);
+router.get("/hashtag/:hashtag", searchPostsByHashtag)
 
 export default router;

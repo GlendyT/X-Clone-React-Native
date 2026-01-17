@@ -68,6 +68,8 @@ export const postApi = {
     api.post(`/posts/${postId}/repost`),
   quotePost: (api: AxiosInstance, postId: string, content: string) =>
     api.post(`/posts/${postId}/quote`, { content }),
+  searchPostsByHashtag: (api: AxiosInstance, hashtag: string) =>
+    api.get(`/posts/hashtag/${hashtag}`),
   getUserLikedPosts: (api: AxiosInstance, username: string) =>
     api.get(`/posts/user/${username}/likes`),
 };
