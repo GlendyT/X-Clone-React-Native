@@ -46,6 +46,13 @@ const decrementTrendsFromContent = async (content) => {
 };
 
 export const getPosts = asyncHandler(async (req, res) => {
+  let userId = null;
+  try {
+    const auth = getAuth(req);
+    userId = auth.userId;
+  } catch (error) {
+    console.log(error);
+  }
   const posts = await Post.find()
     .sort({ createdAt: -1 })
     .populate("user", "username firstName lastName profilePicture")
@@ -75,6 +82,14 @@ export const getPosts = asyncHandler(async (req, res) => {
         select: "username firstName lastName profilePicture",
       },
     });
+  if (userId) {
+    const user = await User.findOne({ clerkId: userId });
+    const postsWithBookmarkStatus = posts.map((post) => ({
+      ...post.toObject(),
+      isBookmarked: user?.bookmarks?.includes(post._id) || false,
+    }));
+    return res.status(200).json({ posts: postsWithBookmarkStatus });
+  }
 
   res.status(200).json({ posts });
 });
@@ -401,7 +416,7 @@ export const quotePost = asyncHandler(async (req, res) => {
   if (originalPost.user.toString() !== user._id.toString()) {
     const shouldNotify = await shouldSendNotification(
       originalPost.user,
-      "quote"
+      "quote",
     );
     if (shouldNotify) {
       await Notification.create({
@@ -506,7 +521,12 @@ export const getUserLikedPosts = asyncHandler(async (req, res) => {
       },
     });
 
-  res.status(200).json({ posts: likedPosts });
+  const postsWithBookmarkStatus = likedPosts.map((post) => ({
+    ...post.toObject(),
+    isBookmarked: authenticatedUser.bookmarks?.includes(post._id) || false,
+  }));
+
+  res.status(200).json({ posts: postsWithBookmarkStatus });
 });
 
 export const searchPostsByHashtag = asyncHandler(async (req, res) => {
@@ -550,4 +570,89 @@ export const searchPostsByHashtag = asyncHandler(async (req, res) => {
     });
 
   res.status(200).json({ posts });
+});
+
+export const bookmarkPost = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { postId } = req.params;
+
+  const user = await User.findOne({ clerkId: userId });
+  const post = await Post.findById(postId);
+
+  if (!user || !post)
+    return res.status(404).json({ error: "User or post not found" });
+  const isBookmarked = user.bookmarks.includes(postId);
+
+  if (isBookmarked) {
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { bookmarks: postId },
+    });
+  } else {
+    await User.findByIdAndUpdate(user._id, {
+      $push: { bookmarks: postId },
+    });
+  }
+
+  res.status(200).json({
+    message: isBookmarked
+      ? "Bookmark removed succesfully"
+      : "Bookmark added succesfully",
+  });
+});
+
+export const getUserBookmarks = asyncHandler(async (req, res) => {
+  const { userId } = getAuth(req);
+  const { username } = req.params;
+
+  const user = await User.findOne({ username });
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  const authenticatedUser = await User.findOne({ clerkId: userId });
+  if (
+    !authenticatedUser ||
+    authenticatedUser._id.toString() !== user._id.toString()
+  ) {
+    return res
+      .status(403)
+      .json({ error: "Not authorized to view these likes" });
+  }
+
+  const bookmarkedPosts = await Post.find({
+    _id: { $in: user.bookmarks },
+  })
+    .sort({ createdAt: -1 })
+    .populate("user", "username firstName lastName profilePicture")
+    .populate("repostedBy", "username fistName lastName profilePicture")
+    .populate({
+      path: "comments",
+      populate: [
+        {
+          path: "user",
+          select: "username firstName lastName profilePicture",
+        },
+        {
+          path: "replies",
+          model: "Comment",
+          populate: {
+            path: "user",
+            model: "User",
+            select: "username firstName lastName profilePicture",
+          },
+        },
+      ],
+    })
+    .populate({
+      path: "originalPost",
+      populate: {
+        path: "user",
+        select: "username firstName lastName profilePicture",
+      },
+    });
+
+  const postsWithBookmarkStatus = bookmarkedPosts.map((post) => ({
+    ...post.toObject(),
+    isBookmarked: true,
+  }));
+
+  res.status(200).json({ posts: postsWithBookmarkStatus });
 });

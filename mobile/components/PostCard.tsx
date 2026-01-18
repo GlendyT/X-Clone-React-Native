@@ -2,10 +2,11 @@ import { View, Text, Alert, Image, TouchableOpacity } from "react-native";
 import React, { useMemo, useState } from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRepost } from "@/hooks/useReposts";
 import QuoteModal from "./QuoteModal";
+import { usePostMutations } from "@/hooks/usePostMutations";
 
 interface PostCardProps {
   post: Post;
@@ -14,6 +15,7 @@ interface PostCardProps {
   onComment: (post: Post) => void;
   isLiked?: boolean;
   currentUser: User;
+  isBookmarked?: boolean;
 }
 
 const PostCard = ({
@@ -23,17 +25,24 @@ const PostCard = ({
   isLiked,
   currentUser,
   onComment,
+  isBookmarked,
 }: PostCardProps) => {
   const displayPost =
     post.isRepost && post.originalPost ? post.originalPost : post;
   const isRepost = post.isRepost && post.originalPost;
   const isOwnPost = displayPost.user._id === currentUser._id;
   const { repost, isReposting } = useRepost();
+  const { toggleBookmark } = usePostMutations(["posts"]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Calcular isLiked localmente basado en los datos del post
   const computedIsLiked = useMemo(() => {
-    if (!currentUser || !currentUser._id || !displayPost.likes || !Array.isArray(displayPost.likes)) {
+    if (
+      !currentUser ||
+      !currentUser._id ||
+      !displayPost.likes ||
+      !Array.isArray(displayPost.likes)
+    ) {
       return isLiked || false;
     }
     const userId = currentUser._id;
@@ -81,7 +90,7 @@ const PostCard = ({
 
   const handleProfilePress = () => {
     if (isOwnPost) {
-      router.push("/(tabs)/profile");
+      router.push("/(drawer)/profile");
     } else {
       router.push(`/profile/${displayPost.user._id}` as any);
     }
@@ -162,7 +171,7 @@ const PostCard = ({
                     className="text-blue-500"
                     onPress={() =>
                       router.push({
-                        pathname: "(modals)/search/[hashtag]",
+                        pathname: "/(modals)/search/[hashtag]",
                         params: { hashtag: part.substring(1) },
                       })
                     }
@@ -171,7 +180,7 @@ const PostCard = ({
                   </Text>
                 ) : (
                   part
-                )
+                ),
               )}
             </Text>
           )}
@@ -205,7 +214,7 @@ const PostCard = ({
                           className="text-blue-500"
                           onPress={() =>
                             router.push({
-                              pathname: "(modals)/search/[hashtag]",
+                              pathname: "/(modals)/search/[hashtag]",
                               params: { hashtag: part.substring(1) },
                             })
                           }
@@ -214,7 +223,7 @@ const PostCard = ({
                         </Text>
                       ) : (
                         part
-                      )
+                      ),
                     )}
                 </Text>
               )}
@@ -282,8 +291,12 @@ const PostCard = ({
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-              <Feather name="share" size={18} color={"#657786"} />
+            <TouchableOpacity onPress={() => toggleBookmark(displayPost._id)}>
+              {displayPost.isBookmarked ? (
+                <FontAwesome name="bookmark" size={18} color="purple" />
+              ) : (
+                <Feather name="bookmark" size={18} color={"#657786"} />
+              )}
             </TouchableOpacity>
           </View>
         </View>

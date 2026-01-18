@@ -35,6 +35,7 @@ export interface Post {
   isRepost?: boolean;
   originalPost?: Post;
   repostedBy?: User[];
+  isBookmarked?: boolean;
 }
 
 export interface Notification {
