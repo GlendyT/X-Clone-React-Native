@@ -12,15 +12,16 @@ import RepostsList from "@/components/RepostsList";
 import LikesList from "@/components/LikesList";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import BookmarksList from "@/components/BookmarksList";
 
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
-  const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes">(
-    "posts"
+  const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes" | "bookmarks">(
+    "posts",
   );
 
   const { refetch: refetchPosts, isLoading: isRefetching } = usePosts(
-    currentUser?.username || ""
+    currentUser?.username || "",
   );
 
   const {
@@ -109,8 +110,10 @@ const ProfileScreen = () => {
         <PostsList username={currentUser?.username} />
       ) : activeTab === "reposts" ? (
         <RepostsList username={currentUser?.username || ""} />
-      ) : (
+      ) : activeTab === "likes" ? (
         <LikesList username={currentUser?.username || ""} />
+      ) : (
+        <BookmarksList username={currentUser?.username || ""} />
       )}
       <EditProfileModal
         isVisible={isEditModalVisible}

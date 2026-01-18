@@ -28,8 +28,8 @@ interface ProfileLayoutProps {
   onEditProfile?: () => void;
   isUpdating?: boolean;
   showTabs?: boolean;
-  activeTab: "posts" | "reposts" | "likes";
-  onTabChange?: (tab: "posts" | "reposts" | "likes") => void;
+  activeTab: "posts" | "reposts" | "likes" | "bookmarks";
+  onTabChange?: (tab: "posts" | "reposts" | "likes" | "bookmarks") => void;
   onFollowingPress?: () => void;
   onFollowersPress?: () => void;
 }
@@ -163,19 +163,14 @@ const ProfileLayout = ({
             <View className="flex-row">
               <TouchableOpacity className="mr-6" onPress={onFollowingPress}>
                 <Text className="text-gray-900">
-                  <Text className="font-bold">
-                    {user.followingCount || 0}
-                    
-                  </Text>
+                  <Text className="font-bold">{user.followingCount || 0}</Text>
                   <Text className="text-gray-500 "> Following</Text>
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity className="mr-6" onPress={onFollowersPress}>
                 <Text className="text-gray-900">
-                  <Text className="font-bold">
-                    {user.followersCount || 0}
-                  </Text>
+                  <Text className="font-bold">{user.followersCount || 0}</Text>
                   <Text className="text-gray-500 "> Followers</Text>
                 </Text>
               </TouchableOpacity>
@@ -210,16 +205,28 @@ const ProfileLayout = ({
 
             {/*Solo mostrar likes si es el propio usuario */}
             {canEdit && (
-              <TouchableOpacity
-                className={`flex-1 py-4 items-center ${activeTab === "likes" ? "border-b-2 border-blue-500" : ""}`}
-                onPress={() => onTabChange?.("likes")}
-              >
-                <Text
-                  className={`font-semibold ${activeTab === "likes" ? "text-blue-500" : "text-gray-500"}`}
+              <>
+                <TouchableOpacity
+                  className={`flex-1 py-4 items-center ${activeTab === "likes" ? "border-b-2 border-blue-500" : ""}`}
+                  onPress={() => onTabChange?.("likes")}
                 >
-                  Likes
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    className={`font-semibold ${activeTab === "likes" ? "text-blue-500" : "text-gray-500"}`}
+                  >
+                    Likes
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`flex-1 py-4 items-center ${activeTab === "bookmarks" ? "border-b-2 border-blue-500" : ""}`}
+                  onPress={() => onTabChange?.("bookmarks")}
+                >
+                  <Text
+                    className={`font-semibold ${activeTab === "bookmarks" ? "text-blue-500" : "text-gray-500"}`}
+                  >
+                    Bookmarks
+                  </Text>
+                </TouchableOpacity>
+              </>
             )}
           </View>
         )}
