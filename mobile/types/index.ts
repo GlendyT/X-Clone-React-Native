@@ -88,6 +88,6 @@ export interface Conversation {
 export interface Trend {
   _id: string;
   topic: string;
-  searchCount: number;
+  searchCount?: number;
   postCount: number;
 }

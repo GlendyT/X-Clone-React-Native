@@ -126,4 +126,6 @@ export const trendApi = {
   getTrends: (api: AxiosInstance) => api.get("/trends"),
   recordSearch: (api: AxiosInstance, searchTerm: string) =>
     api.post("/trends", { searchTerm }),
+  searchTrends: (api: AxiosInstance, searchTerm: string) =>
+    api.get(`/trends/search?q=${searchTerm}`),
 };
