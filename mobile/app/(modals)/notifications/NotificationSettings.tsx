@@ -10,11 +10,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const NotificationSettings = () => {
   const { notificationSettings, isLoadingSettings, updateSettings } =
     useNotifications();
   const router = useRouter();
+  const { theme } = useTheme();
   const [localSettings, setLocalSettings] = useState(notificationSettings);
 
   useEffect(() => {
@@ -57,14 +59,21 @@ const NotificationSettings = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-100">
+    <SafeAreaView
+      className={`flex-1 ${theme === "dark" ? "bg-black" : "bg-white"}`}
+      edges={["top"]}
+    >
+      <View
+        className={`flex-row justify-between items-center px-4 py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           className="mr-4 flex-row "
         >
-          <Feather name="arrow-left" size={24} color="black" />
-          <Text className="text-lg font-bold text-gray-900 ml-4">
+          <Feather name="arrow-left" size={24} color="gray" />
+          <Text
+            className={`text-lg font-bold ${theme === "dark" ? "text-gray-100" : "text-gray-900"} ml-4`}
+          >
             Notification Settings
           </Text>
         </TouchableOpacity>
@@ -72,17 +81,27 @@ const NotificationSettings = () => {
 
       <View className="px-6">
         <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-base text-gray-800">Enable Notification</Text>
+          <Text
+            className={`text-base ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+          >
+            Enable Notification
+          </Text>
           <Switch value={localSettings.enabled} onValueChange={toggleMaster} />
         </View>
 
-        <View className="border-t border-gray-100 pt-4 ">
+        <View
+          className={`border-t  ${theme === "dark" ? "border-gray-600" : "border-gray-100"} pt-4`}
+        >
           {Object.keys(localSettings.types).map((type) => (
             <View
               key={type}
-              className="flex-row items-center justify-between py-3 border-b border-gray-100"
+              className={`flex-row items-center justify-between py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
             >
-              <Text className="text-base text-gray-800 capitalize">{type}</Text>
+              <Text
+                className={`text-base ${theme === "dark" ? "text-gray-100" : "text-gray-900"} capitalize`}
+              >
+                {type}
+              </Text>
               <Switch
                 value={localSettings.types[type]}
                 onValueChange={() => toggleType(type)}

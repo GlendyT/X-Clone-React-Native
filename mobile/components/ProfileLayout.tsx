@@ -14,6 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { User } from "@/types";
+import { useTheme } from "@/hooks/useThemeContext";
 
 interface ProfileLayoutProps {
   user: User | undefined;
@@ -53,17 +54,25 @@ const ProfileLayout = ({
   onFollowingPress,
 }: ProfileLayoutProps) => {
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
 
   if (!user) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView
+      className={`flex-1 ${theme === "dark" ? "bg-black" : "bg-white"} `}
+      edges={["top"]}
+    >
       {/*HEADER */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+      <View
+        className={`flex-row items-center justify-between px-4 py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
         <View className="flex-row items-center">
           {headerLeft ? <View className="mr-4">{headerLeft}</View> : null}
           <View>
-            <Text className="text-xl font-bold text-gray-900">
+            <Text
+              className={`text-xl font-bold  ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+            >
               {user.firstName || ""} {user.lastName || ""}
             </Text>
             <Text className="text-gray-500 text-sm">
@@ -110,7 +119,9 @@ const ProfileLayout = ({
           )}
         </View>
 
-        <View className="px-4 pb-4 border-b border-gray-100">
+        <View
+          className={`px-4 pb-4 border-b ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+        >
           <View className="flex-row justify-between items-end -mt-16 mb-4">
             <View className="relative">
               <Image
@@ -135,19 +146,28 @@ const ProfileLayout = ({
           {/*User info */}
           <View className="mb-4">
             <View className="flex-row items-center mb-1">
-              <Text className="text-xl font-bold text-gray-900 mr-1">
+              <Text
+                className={`text-xl font-bold mr-1 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+              >
                 {user.firstName} {user.lastName}
               </Text>
               <Feather name="check-circle" size={20} color={"#1DA1F2"} />
             </View>
             <Text className="text-gray-500 mb-2">@{user.username}</Text>
-            <Text className="text-gray-900 mb-3">
+            <Text
+              className={` mb-3 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+            >
               {user.bio || "No bio available"}
             </Text>
 
             <View className="flex-row items-center mb-2">
               <Feather name="map-pin" size={16} color={"#657786"} />
-              <Text> {user.location || "Location not specified yet"}</Text>
+              <Text
+                className={` mb-3 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+              >
+                {" "}
+                {user.location || "Location not specified yet"}
+              </Text>
             </View>
 
             <View className="flex-row items-center mb-3">
@@ -162,14 +182,18 @@ const ProfileLayout = ({
 
             <View className="flex-row">
               <TouchableOpacity className="mr-6" onPress={onFollowingPress}>
-                <Text className="text-gray-900">
+                <Text
+                  className={`${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                >
                   <Text className="font-bold">{user.followingCount || 0}</Text>
                   <Text className="text-gray-500 "> Following</Text>
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity className="mr-6" onPress={onFollowersPress}>
-                <Text className="text-gray-900">
+                <Text
+                  className={`${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                >
                   <Text className="font-bold">{user.followersCount || 0}</Text>
                   <Text className="text-gray-500 "> Followers</Text>
                 </Text>
@@ -180,7 +204,9 @@ const ProfileLayout = ({
 
         {/*Tabs - solo si showTabs es true */}
         {showTabs && (
-          <View className="flex-row border-b border-gray-200">
+          <View
+            className={`flex-row border-b ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+          >
             <TouchableOpacity
               className={`flex-1 py-4 items-center ${activeTab === "posts" ? "border-b-2 border-blue-500" : ""}`}
               onPress={() => onTabChange?.("posts")}

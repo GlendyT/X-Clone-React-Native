@@ -18,6 +18,7 @@ import { useConversations, useUserSearch } from "@/hooks/useMessages";
 import { Conversation, User } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "expo-router";
+import { useTheme } from "@/hooks/useThemeContext";
 
 //TODO: IMPLEMENT REAL DATA AND FUNCTIONALITY
 
@@ -25,6 +26,7 @@ const MessagesScreen = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
+  const { theme } = useTheme();
 
   const { searchedUsers, isSearching } = useUserSearch(searchText);
 
@@ -48,7 +50,7 @@ const MessagesScreen = () => {
             deleteConv(conversationId);
           },
         },
-      ]
+      ],
     );
   };
 
@@ -79,7 +81,7 @@ const MessagesScreen = () => {
       conv.otherUser?.firstName
         .toLowerCase()
         .includes(searchText.toLowerCase()) ||
-      conv.otherUser?.lastName.toLowerCase().includes(searchText.toLowerCase())
+      conv.otherUser?.lastName.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const getRelativeTime = (date: string) => {
@@ -93,15 +95,28 @@ const MessagesScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView
+      className={`flex-1 ${theme === "dark" ? "bg-black" : "bg-white"} `}
+      edges={["top"]}
+    >
       {/*HEADER */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-        <Text className="text-xl font-bold text-gray-900">Messages</Text>
+      <View
+        className={`flex-row items-center justify-between px-4 py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
+        <Text
+          className={`text-xl font-bold  ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+        >
+          Messages
+        </Text>
       </View>
 
       {/* SEARCH BAR */}
-      <View className="px-4 py-3 border-b border-gray-100">
-        <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-3">
+      <View
+        className={`px-4 py-3 border-b ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
+        <View
+          className={`flex-row items-center  rounded-full px-4 py-3  ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
+        >
           <Feather name="search" size={20} color={"#657786"} />
           <TextInput
             placeholder="Search for people and groups"
@@ -152,7 +167,9 @@ const MessagesScreen = () => {
                 />
                 <View className="flex-1">
                   <View className="flex-row items-center gap-1">
-                    <Text className="font-semibold text-gray-900">
+                    <Text
+                      className={`font-semibold  ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                    >
                       {user.firstName} {user.lastName}
                     </Text>
                     <Text className="text-gray-500 text-sm ml-1">
@@ -196,7 +213,7 @@ const MessagesScreen = () => {
           {conversations.map((conversation: Conversation) => (
             <TouchableOpacity
               key={conversation._id}
-              className="flex-row items-center p-4 border-b border-gray-50 active:bg-gray-50"
+              className={`flex-row items-center p-4 border-b  active:bg-gray-50 ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
               onPress={() => openConversation(conversation)}
               onLongPress={() => deleteConversation(conversation._id)}
             >
@@ -211,7 +228,9 @@ const MessagesScreen = () => {
               <View className="flex-1">
                 <View className="flex-row items-center justify-between mb-1">
                   <View className="flex-row items-center gap-1">
-                    <Text className="font-semibold text-gray-900">
+                    <Text
+                      className={`font-semibold text-gray-900 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                    >
                       {conversation.otherUser?.firstName}{" "}
                       {conversation.otherUser?.lastName}
                     </Text>
@@ -248,7 +267,9 @@ const MessagesScreen = () => {
       )}
 
       {/*  QUICK ACTIONS */}
-      <View className="px-4 py-2 border-t border-gray-100 bg-gray-50">
+      <View
+        className={`px-4 py-2 border-t   ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
         <Text className="text-xs text-gray-500 text-center">
           Tap to open • Long press to delete
         </Text>

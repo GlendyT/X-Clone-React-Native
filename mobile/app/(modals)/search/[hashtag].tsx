@@ -18,10 +18,12 @@ import PostCard from "@/components/PostCard";
 import CommentsModal from "@/components/CommentsModal";
 import { Feather } from "@expo/vector-icons";
 import { useTrends } from "@/hooks/useTrends";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const HashtagList = () => {
   const { hashtag } = useLocalSearchParams<{ hashtag: string }>();
   const router = useRouter();
+  const { theme } = useTheme();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [localSearchTerm, setLocalSearchTerm] = useState(`#${hashtag}`);
   const [currentHashtag, setCurrentHashtag] = useState(hashtag);
@@ -76,14 +78,21 @@ const HashtagList = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <View className="px-4 py-3 border-b border-gray-100 flex-row items-center ">
+    <SafeAreaView
+      className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+      edges={["top"]}
+    >
+      <View
+        className={`px-4 py-3 border-b  flex-row items-center  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
           <Feather name="arrow-left" size={24} color={"#1DA1F2"} />
         </TouchableOpacity>
-        <View className="w-full flex-row items-center justify-between bg-gray-100 rounded-full px-4 py-3">
+        <View
+          className={`w-full flex-row items-center justify-between rounded-full px-4 py-3 ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
+        >
           <TextInput
-            className="w-auto ml-3 text-base"
+            className={`w-auto ml-3 text-base ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
             placeholderTextColor={"#657786"}
             placeholder={`Search X`}
             value={localSearchTerm}
@@ -106,7 +115,11 @@ const HashtagList = () => {
             Trends for you
           </Text>
           {isLoadingTrends ? (
-            <ActivityIndicator size={"large"} color={"#1DA1F2"} className="mt-4" />
+            <ActivityIndicator
+              size={"large"}
+              color={"#1DA1F2"}
+              className="mt-4"
+            />
           ) : trends.length > 0 ? (
             trends.map((item) => (
               <TouchableOpacity
@@ -154,9 +167,7 @@ const HashtagList = () => {
           )}
           ListEmptyComponent={() => (
             <View className="flex-1 items-center justify-center mt-20">
-              <Text className="text-gray-500 text-lg">
-                No results found
-              </Text>
+              <Text className="text-gray-500 text-lg">No results found</Text>
             </View>
           )}
         />

@@ -13,6 +13,7 @@ import { Feather } from "@expo/vector-icons";
 import { useTrends } from "@/hooks/useTrends";
 import { formatSearchCount } from "@/utils/formatters";
 import { useRouter } from "expo-router";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const SearchScreen = () => {
   const {
@@ -27,6 +28,7 @@ const SearchScreen = () => {
     hasSearched,
   } = useTrends();
   const router = useRouter();
+  const { theme } = useTheme();
 
   const handleTrendClick = (topic: string) => {
     const cleanTopic = topic.replace("#", "");
@@ -37,10 +39,16 @@ const SearchScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView
+      className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+    >
       {/*HEADER */}
-      <View className="px-4 py-3 border-b border-gray-100">
-        <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-3">
+      <View
+        className={`px-4 py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+      >
+        <View
+          className={`flex-row items-center px-4 py-3 ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
+        >
           <Feather name="search" size={20} color={"#657786"} />
           <TextInput
             placeholder="Search X"
@@ -70,7 +78,7 @@ const SearchScreen = () => {
         }
       >
         <View className="p-4">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
+          <Text className={`text-xl font-bold  mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-900"}`}>
             {hasSearched && searchTerm
               ? `Results for "${searchTerm}"`
               : "Trends for you"}
@@ -85,10 +93,12 @@ const SearchScreen = () => {
             trends.map((item) => (
               <TouchableOpacity
                 key={item._id}
-                className="py-3 border-b border-gray-100"
+                className={`py-3 border-b ${theme === "dark" ? "border-gray-600" : "border-gray-100"} `}
                 onPress={() => handleTrendClick(item.topic)}
               >
-                <Text className="text-gray-500 text-sm">
+                <Text
+                  className={` text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-500"}`}
+                >
                   Trending in your region
                 </Text>
                 <Text className="font-bold text-blue-500 text-lg">

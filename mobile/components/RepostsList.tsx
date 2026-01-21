@@ -7,9 +7,11 @@ import { Post } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const RepostsList = ({ username }: { username: string }) => {
   const { currentUser } = useCurrentUser();
+  const { theme } = useTheme();
   const { reposts, isLoading, error, refetch } = useUserReposts(username);
   const { toggleLike, deletePost, checkIsLiked } = usePosts();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
@@ -61,9 +63,13 @@ const RepostsList = ({ username }: { username: string }) => {
         return (
           <View key={repost._id}>
             {/* Repost indicator */}
-            <View className="flex-row items-center px-4 pt-3 pb-1 bg-gray-50">
+            <View
+              className={`flex-row items-center px-4 pt-3 pb-1 ${theme === "dark" ? "bg-black" : "bg-white"}`}
+            >
               <Feather name="repeat" size={16} color={"#657786"} />
-              <Text>
+              <Text
+                className={`text-xs ml-3 font-bold  ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+              >
                 {repost.user?._id === currentUser?._id
                   ? "You"
                   : `${repost.user.firstName || ""} ${repost.user.lastName || ""}`}{" "}

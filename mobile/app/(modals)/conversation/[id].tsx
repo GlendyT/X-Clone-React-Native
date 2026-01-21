@@ -18,16 +18,18 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useUserById } from "@/hooks/useUserById";
 import { Feather } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const ChatScreen = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { theme } = useTheme();
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoadingConversation, setIsLoadingConversation] = useState(true);
   const { data: otherUser, isLoading: isLoadingUser } = useUserById(
-    id as string
+    id as string,
   );
   const {
     messages,
@@ -114,8 +116,13 @@ const ChatScreen = () => {
           headerShown: false,
         }}
       />
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-        <View className="flex-row items-center px-4 py-3 border-b border-gray-100 ">
+      <SafeAreaView
+        className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+        edges={["top"]}
+      >
+        <View
+          className={`flex-row items-center px-4 py-3 mb-4 border-b ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+        >
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Feather name="arrow-left" size={24} color={"#1DA1F2"} />
           </TouchableOpacity>
@@ -126,7 +133,9 @@ const ChatScreen = () => {
             className="size-10 rounded-full mr-3"
           />
           <View className="flex-1">
-            <Text className="font-semibold text-gray-900">
+            <Text
+              className={`font-semibold ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+            >
               {otherUser.firstName} {otherUser.lastName}
             </Text>
             <Text className="text-gray-500 text-sm">@{otherUser.username}</Text>
@@ -210,7 +219,9 @@ const ChatScreen = () => {
             </ScrollView>
 
             {/*Message input */}
-            <View className="flex-row items-center px-4 py-3 border-t border-gray-100 bg-white">
+            <View
+              className={`flex-row items-center px-4 py-3 border-t border-gray-100  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+            >
               <View className="flex-1 flex-row items-center bg-gray-100 rounded-full px-4 py-3 mr-3">
                 <TextInput
                   className="flex-1 text-base"
@@ -231,7 +242,7 @@ const ChatScreen = () => {
                 {isSending ? (
                   <ActivityIndicator size={"small"} color={"white"} />
                 ) : (
-                  <Feather name="send" size={20} color={"white"} />
+                  <Feather name="send" size={20} color={"black"} />
                 )}
               </TouchableOpacity>
             </View>

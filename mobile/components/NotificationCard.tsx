@@ -3,6 +3,7 @@ import React from "react";
 import { Notification } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { formatDate } from "@/utils/formatters";
+import { useTheme } from "@/hooks/useThemeContext";
 
 interface NotificationCardProps {
   notification: Notification;
@@ -51,12 +52,16 @@ const NotificationCard = ({
           style: "destructive",
           onPress: () => onDelete(notification._id),
         },
-      ]
+      ],
     );
   };
 
+  const { theme } = useTheme();
+
   return (
-    <View className="border-b border-gray-100 bg-white">
+    <View
+      className={`border-b ${theme === "dark" ? "bg-black border-gray-600 " : "bg-white border-gray-100 "}`}
+    >
       <View className="flex-row p-4">
         <View className="relative mr-3">
           <Image
@@ -64,7 +69,7 @@ const NotificationCard = ({
             className="size-12 rounded-full"
           />
 
-          <View className="absolute -bottom-1 -right-1 size-6 bg-white items-center justify-center">
+          <View className="absolute -bottom-1 -right-1 size-6  items-center justify-center">
             {getNotificationIcon()}
           </View>
         </View>
@@ -72,7 +77,9 @@ const NotificationCard = ({
         <View className="flex-1">
           <View className="flex-row items-start justify-between mb-1">
             <View className="flex-1">
-              <Text className="text-gray-900 text-base leading-5 mb-1">
+              <Text
+                className={` text-base leading-5 mb-1 ${theme === "dark" ? "text-gray-300" : "text-gray-900"} `}
+              >
                 <Text className="font-semibold">
                   {notification.from.firstName} {notification.from.lastName}
                 </Text>
@@ -80,7 +87,9 @@ const NotificationCard = ({
                   @{notification.from.username}
                 </Text>
               </Text>
-              <Text className="text-gray-700 text-sm mb-2">
+              <Text
+                className={` text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+              >
                 {getNotificationText()}
               </Text>
             </View>
