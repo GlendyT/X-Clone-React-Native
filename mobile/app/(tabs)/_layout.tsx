@@ -61,7 +61,7 @@ const TabsLayout = () => {
           ),
         }}
       />
-
+      {/* 
       <Tabs.Screen
         name="profile"
         options={{
@@ -70,7 +70,7 @@ const TabsLayout = () => {
             <Feather name="user" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 };
