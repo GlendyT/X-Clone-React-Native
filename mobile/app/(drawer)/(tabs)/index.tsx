@@ -5,6 +5,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Appearance,
+  useColorScheme,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +18,7 @@ import { usePosts } from "@/hooks/usePosts";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { DrawerActions } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const HomeScreen = () => {
   const [isRefetching, setIsRefetching] = useState(false);
@@ -39,12 +42,16 @@ const HomeScreen = () => {
 
   const { currentUser, isLoading } = useCurrentUser();
 
+  const { theme } = useTheme();
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView
+      className={`flex-1 ${theme === "dark" ? "bg-black " : "bg-white "}`}
+    >
       <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-100">
         <TouchableOpacity onPress={openDrawer}>
           {isLoading || !currentUser ? (
-            <View className="w-10 h-10 rounded-full bg-gray-200" />
+            <View className="w-10 h-10 rounded-full " />
           ) : (
             <Image
               source={{ uri: currentUser.profilePicture || "" }}
@@ -53,8 +60,16 @@ const HomeScreen = () => {
             />
           )}
         </TouchableOpacity>
-        <Text className="text-xl font-bold text-gray-900">Home</Text>
-        <Entypo name="dots-three-vertical" size={24} color="black" />
+        <Text
+          className={`text-xl font-bold ${theme === "dark" ? "text-white" : "text-black"}`}
+        >
+          Home
+        </Text>
+        <Entypo
+          name="dots-three-vertical"
+          size={24}
+          color={`${theme === "dark" ? "white" : "black"}`}
+        />
       </View>
 
       <ScrollView

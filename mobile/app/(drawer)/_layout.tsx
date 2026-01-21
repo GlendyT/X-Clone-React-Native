@@ -3,27 +3,29 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
 import { Feather } from "@expo/vector-icons";
 import Content from "../(modals)/Content";
+import { useColorScheme } from "nativewind";
 
 export default function DrawerLayout() {
+  const { colorScheme } = useColorScheme();
+  
+  const isDark = colorScheme === 'dark';
   return (
-    <GestureHandlerRootView className="">
+    <GestureHandlerRootView>
       <Drawer
         drawerContent={(props) => <Content {...props} />}
         screenOptions={{
-          drawerActiveTintColor: "#5f03bc",
-          drawerInactiveTintColor: "#657786",
-          drawerActiveBackgroundColor: "#e6e6e6",
+          drawerActiveTintColor: isDark ? "#322a2a" : "#a982c4",
+          drawerInactiveTintColor: isDark ? "#9ca3af" : "#293a5e",
+          drawerActiveBackgroundColor: isDark ? "#e5d2fb" : "#f3f4f6",
           drawerItemStyle: { marginVertical: 0 },
           drawerStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: isDark ? "#1f2937" : "#ffffff",
             width: 280,
-            paddingTop: 20,
             height: "100%",
             justifyContent: "space-between",
             alignItems: "stretch",
           },
           drawerContentStyle: {
-            backgroundColor: "#fff",
             alignItems: "stretch",
             justifyContent: "space-between",
             height: "100%",
