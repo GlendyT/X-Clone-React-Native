@@ -11,6 +11,7 @@ import { useUserReposts } from "@/hooks/useReposts";
 import RepostsList from "@/components/RepostsList";
 import LikesList from "@/components/LikesList";
 import { useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
 
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
@@ -62,6 +63,11 @@ const ProfileScreen = () => {
         refetchReposts();
         refetchProfile();
       }}
+      headerLeft={
+        <TouchableOpacity onPress={() => router.back()}>
+          <Feather name="arrow-left" size={24} color={"black"} />
+        </TouchableOpacity>
+      }
       headerRight={<SignOutButton />}
       actionButton={
         <TouchableOpacity
@@ -80,7 +86,7 @@ const ProfileScreen = () => {
       onTabChange={setActiveTab}
       onFollowingPress={() =>
         router.push({
-          pathname: "/profile/follows",
+          pathname: "/(modals)/profile/follows",
           params: {
             userId: currentUser._id,
             type: "following",
@@ -90,7 +96,7 @@ const ProfileScreen = () => {
       }
       onFollowersPress={() =>
         router.push({
-          pathname: "/profile/follows",
+          pathname: "/(modals)/profile/follows",
           params: {
             userId: currentUser._id,
             type: "followers",

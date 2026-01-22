@@ -56,7 +56,7 @@ const MessagesScreen = () => {
     // Navegar a la pantalla de chat con el userId del otro usuario
     if (conversation.otherUser?._id) {
       router.push({
-        pathname: "/conversation/[id]",
+        pathname: "/(modals)/conversation/[id]",
         params: { id: conversation.otherUser._id },
       });
     }
@@ -65,7 +65,7 @@ const MessagesScreen = () => {
   const startNewConversation = (user: User) => {
     if (user._id) {
       router.push({
-        pathname: "/conversation/[id]",
+        pathname: "/(modals)/conversation/[id]",
         params: { id: user._id },
       });
     }

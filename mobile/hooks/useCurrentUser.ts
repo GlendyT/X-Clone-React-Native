@@ -15,5 +15,10 @@ export const useCurrentUser = () => {
     select: (response) => response.data.user,
   });
 
-  return { currentUser, isLoading, error, refetch };
+  return { 
+    currentUser: currentUser || null, 
+    isLoading, 
+    error, 
+    refetch 
+  };
 };

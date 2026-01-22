@@ -1,11 +1,19 @@
-import { View, Text } from "react-native";
-import React from "react";
 
+import React from "react";
+import { Drawer } from 'expo-router/drawer';
 const ProfileSidebar = ({onClose}: {onClose: () => void}) => {
   return (
-    <View>
-      <Text>ProfileSidebar</Text>
-    </View>
+    <Drawer>
+      <Drawer.Screen
+      />
+      <Drawer.Screen
+        name="profile" // This is the name of the page and must match the url from root
+        options={{
+          drawerLabel: 'User',
+          title: 'overview',
+        }}
+      />
+    </Drawer>
   );
 };
 
