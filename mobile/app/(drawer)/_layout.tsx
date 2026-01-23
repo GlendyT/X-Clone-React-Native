@@ -1,5 +1,4 @@
 import React from "react";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
 import { Feather } from "@expo/vector-icons";
@@ -7,24 +6,28 @@ import Content from "../(modals)/Content";
 
 export default function DrawerLayout() {
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView className="">
       <Drawer
         drawerContent={(props) => <Content {...props} />}
         screenOptions={{
           drawerActiveTintColor: "#5f03bc",
           drawerInactiveTintColor: "#657786",
+          drawerActiveBackgroundColor: "#e6e6e6",
+          drawerItemStyle: { marginVertical: 0 },
           drawerStyle: {
             backgroundColor: "#fff",
             width: 280,
-            borderRightWidth: 1,
-            borderRightColor: "#E1E8ED",
             paddingTop: 20,
-            paddingHorizontal: 10,
             height: "100%",
             justifyContent: "space-between",
+            alignItems: "stretch",
           },
           drawerContentStyle: {
             backgroundColor: "#fff",
+            alignItems: "stretch",
+            justifyContent: "space-between",
+            height: "100%",
+            alignContent: "stretch",
           },
           headerShown: false,
         }}
@@ -46,6 +49,17 @@ export default function DrawerLayout() {
             title: "Profile",
             drawerIcon: ({ color, size }) => (
               <Feather name="user" size={size} color={color} />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="bookmarks"
+          options={{
+            drawerLabel: "Bookmarks",
+            title: "Bookmarks",
+            drawerIcon: ({ color, size }) => (
+              <Feather name="bookmark" size={size} color={color} />
             ),
           }}
         />

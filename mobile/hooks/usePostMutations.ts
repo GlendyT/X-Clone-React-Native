@@ -26,8 +26,18 @@ export const usePostMutations = (queryKeyToInvalidate: QueryKey) => {
     },
   });
 
+  const bookmarkPostMutation = useMutation({
+    mutationFn: (postId: string) => postApi.bookmarkPost(api, postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
+      queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+    },
+  });
+
   return {
     toggleLike: (postId: string) => likePostMutation.mutate(postId),
     deletePost: (postId: string) => deletePostMutation.mutate(postId),
+    toggleBookmark: (postId: string) => bookmarkPostMutation.mutate(postId),
   };
 };

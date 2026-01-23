@@ -20,7 +20,7 @@ const API_BASE_URL = getApiUrl();
 
 // this will basically create an authenticated api, pass the token into our headers
 export const createApiClient = (
-  getToken: () => Promise<string | null>
+  getToken: () => Promise<string | null>,
 ): AxiosInstance => {
   const api = axios.create({ baseURL: API_BASE_URL });
 
@@ -72,6 +72,10 @@ export const postApi = {
     api.get(`/posts/hashtag/${hashtag}`),
   getUserLikedPosts: (api: AxiosInstance, username: string) =>
     api.get(`/posts/user/${username}/likes`),
+  bookmarkPost: (api: AxiosInstance, postId: string) =>
+    api.post(`/posts/${postId}/bookmark`),
+  getUserBookmarks: (api: AxiosInstance, username: string) =>
+    api.get(`/posts/user/${username}/bookmarks`),
 };
 
 export const commentApi = {
@@ -109,10 +113,10 @@ export const conversationApi = {
     api: AxiosInstance,
     conversationId: string,
     page = 1,
-    limit = 50
+    limit = 50,
   ) =>
     api.get(
-      `/conversations/${conversationId}/messages?page=${page}&limit=${limit}`
+      `/conversations/${conversationId}/messages?page=${page}&limit=${limit}`,
     ),
   sendMessage: (api: AxiosInstance, conversationId: string, content: string) =>
     api.post(`/conversations/${conversationId}/messages`, { content }),
