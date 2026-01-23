@@ -10,7 +10,7 @@ export default function DrawerLayout() {
   
   const isDark = colorScheme === 'dark';
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView  >
       <Drawer
         drawerContent={(props) => <Content {...props} />}
         screenOptions={{

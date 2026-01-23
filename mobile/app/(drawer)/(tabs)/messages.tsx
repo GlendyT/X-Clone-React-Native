@@ -101,7 +101,7 @@ const MessagesScreen = () => {
     >
       {/*HEADER */}
       <View
-        className={`flex-row items-center justify-between px-4 py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
+        className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-800 `}
       >
         <Text
           className={`text-xl font-bold  ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
@@ -229,7 +229,7 @@ const MessagesScreen = () => {
                 <View className="flex-row items-center justify-between mb-1">
                   <View className="flex-row items-center gap-1">
                     <Text
-                      className={`font-semibold text-gray-900 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                      className={`font-semibold  ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
                     >
                       {conversation.otherUser?.firstName}{" "}
                       {conversation.otherUser?.lastName}

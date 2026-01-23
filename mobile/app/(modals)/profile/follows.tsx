@@ -1,4 +1,5 @@
 import ListFollows from "@/components/ListFollows";
+import { useTheme } from "@/hooks/useThemeContext";
 import { followApi, useApiClient } from "@/utils/api";
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
@@ -15,11 +16,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const FollowsScreen = () => {
   const [activeTab, setActiveTab] = useState<"followers" | "following">(
-    "followers"
+    "followers",
   );
   const { userId, username } = useLocalSearchParams();
   const router = useRouter();
   const api = useApiClient();
+  const { theme } = useTheme();
 
   const isFollowers = activeTab === "followers";
 
@@ -40,38 +42,53 @@ const FollowsScreen = () => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
+      <View
+        className={`flex-1 justify-center items-center  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+      >
         <ActivityIndicator size={"large"} color={"#1DA1F2"} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-100">
+    <SafeAreaView
+      className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+      edges={["top"]}
+    >
+      <View className="flex-row justify-between items-center px-4 py-3 ">
         <TouchableOpacity
           onPress={() => router.back()}
           className="mr-4 flex-row "
         >
-          <Feather name="arrow-left" size={24} color="black" />
-          <Text className="text-lg font-bold text-gray-900 ml-4">
+          <Feather name="arrow-left" size={24} color="gray" />
+          <Text
+            className={`text-lg font-bold ml-4 ${theme === "dark" ? "text-gray-200" : "text-gray-900"}`}
+          >
             @{username || "User"}
           </Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-row border-b border-gray-100">
+      <View className="flex-row ">
         <TouchableOpacity
-          className={`flex-1 py-4 items-center ${activeTab === "followers" ? "border-b-2 border-blue-500" : ""}`}
+          className={`flex-1 py-4 items-center  ${activeTab === "followers" ? "border-b-2 border-blue-500" : ""}`}
           onPress={() => setActiveTab("followers")}
         >
-          <Text>Followers</Text>
+          <Text
+            className={`${theme === "dark" ? "text-gray-200" : "text-gray-900"}`}
+          >
+            Followers
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className={`flex-1 py-4 items-center ${activeTab === "following" ? "border-b-2 border-blue-500" : ""}`}
           onPress={() => setActiveTab("following")}
         >
-          <Text>Following</Text>
+          <Text
+            className={`${theme === "dark" ? "text-gray-200" : "text-gray-900"}`}
+          >
+            Following
+          </Text>
         </TouchableOpacity>
       </View>
 
