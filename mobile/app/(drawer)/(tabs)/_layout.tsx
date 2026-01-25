@@ -3,18 +3,23 @@ import { Redirect, Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@clerk/clerk-expo";
+import { useColorScheme } from "nativewind";
 
 const TabsLayout = () => {
+  const { colorScheme } = useColorScheme();
+
+  const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
   const { isSignedIn } = useAuth();
   if (!isSignedIn) return <Redirect href="/(auth)" />;
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#1DA1F2",
-        tabBarInactiveTintColor: "#657786",
+        tabBarActiveTintColor: isDark ? "#dac0ee" : "#1DA1F2",
+        tabBarInactiveTintColor: isDark ? "#9d82ab" : "#040a17",
         tabBarStyle: {
-          backgroundColor: "#fff",
+          backgroundColor: isDark ? "#1f2937" : "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#E1E8ED",
           height: 50 + insets.bottom,

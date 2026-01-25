@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import { useRepost } from "@/hooks/useReposts";
 import QuoteModal from "./QuoteModal";
 import { usePostMutations } from "@/hooks/usePostMutations";
+import { useTheme } from "@/hooks/useThemeContext";
 
 interface PostCardProps {
   post: Post;
@@ -34,7 +35,7 @@ const PostCard = ({
   const { repost, isReposting } = useRepost();
   const { toggleBookmark } = usePostMutations(["posts"]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const { theme } = useTheme();
   // Calcular isLiked localmente basado en los datos del post
   const computedIsLiked = useMemo(() => {
     if (
@@ -114,7 +115,9 @@ const PostCard = ({
   };
 
   return (
-    <View className="border-b border-gray-100 bg-white">
+    <View
+      className={`border-b  ${theme === "dark" ? "bg-black border-gray-700 " : "bg-white border-gray-100"}`}
+    >
       {/*Mostrar indicador de repost */}
 
       <QuoteModal
@@ -126,7 +129,9 @@ const PostCard = ({
       {isRepost && (
         <View className="flex-row items-center px-4 mt-2">
           <Feather name="repeat" size={16} color={"#657786"} />
-          <Text className="text-gray-500 text-sm ml-2">
+          <Text
+            className={` text-sm ml-2 ${theme === "dark" ? "text-gray-300 " : "text-gray-500"} `}
+          >
             {post.user.firstName} {post.user.lastName} reposted
           </Text>
         </View>
@@ -145,7 +150,7 @@ const PostCard = ({
               onPress={handleProfilePress}
               className="flex-row items-center"
             >
-              <Text className="font-bold text-gray-900 mr-1">
+              <Text className={`font-bold  mr-1 ${theme === "dark" ? "text-gray-200 " : "text-gray-500"}`}>
                 {displayPost.user.firstName} {displayPost.user.lastName}
               </Text>
 
@@ -163,7 +168,7 @@ const PostCard = ({
           </View>
 
           {displayPost.content && (
-            <Text className="text-gray-900 text-base leading-5 mb-3">
+            <Text className={` text-base leading-5 mb-3 ${theme === "dark" ? "text-gray-300 " : "text-gray-500"}`}>
               {displayPost.content.split(/(#\w+)/g).map((part, index) =>
                 part.startsWith("#") ? (
                   <Text

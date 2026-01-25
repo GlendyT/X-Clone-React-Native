@@ -8,18 +8,21 @@ import {
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Entypo, Feather } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const Content = ({ ...props }: DrawerContentComponentProps) => {
   const { currentUser, isLoading } = useCurrentUser();
+  const { theme, toggleTheme } = useTheme();
+  
   return (
     <SafeAreaView
-      className="flex-1 bg-transparent py-2 "
+      className={`flex-1 py-6 ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}
       edges={["top", "bottom"]}
     >
-      <View className=" w-full items-start justify-start gap-2 ml-6">
-        <View className="flex-row  items-center  justify-between w-full  ">
+      <View className="w-full items-start justify-start gap-2 ml-6">
+        <View className="flex-row items-center justify-between w-full">
           {isLoading || !currentUser ? (
-            <View className="w-10 h-10 rounded-full bg-gray-200" />
+            <View className="w-10 h-10 rounded-full " />
           ) : (
             <Image
               source={{ uri: currentUser.profilePicture || "" }}
@@ -31,21 +34,21 @@ const Content = ({ ...props }: DrawerContentComponentProps) => {
             <Entypo
               name="dots-three-vertical"
               size={24}
-              color="black"
+              color={theme === 'dark' ? 'white' : 'black'}
               className="mr-10"
             />
           </TouchableOpacity>
         </View>
         <View>
           {isLoading || !currentUser ? (
-            <View className="w-24 h-4 rounded bg-gray-200" />
+            <View className="w-24 h-4 rounded " />
           ) : (
-            <Text className="text-xl font-semibold">
+            <Text className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
               {currentUser.bio || "No bio available"}
             </Text>
           )}
           {isLoading || !currentUser ? (
-            <View className="w-24 h-4 rounded bg-gray-200" />
+            <View className="w-24 h-4 rounded" />
           ) : (
             <Text className="text-base text-gray-500 font-semibold">
               @{currentUser.username}
@@ -53,11 +56,11 @@ const Content = ({ ...props }: DrawerContentComponentProps) => {
           )}
         </View>
 
-        <View className="flex-row gap-2 ">
+        <View className="flex-row gap-2">
           {isLoading || !currentUser ? (
-            <View className="w-24 h-4 rounded bg-gray-200" />
+            <View className="w-24 h-4 rounded " />
           ) : (
-            <Text className="text-lg font-semibold">
+            <Text className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
               {currentUser.followingCount || 0}{" "}
               <Text className="text-base text-gray-500 font-semibold">
                 Following
@@ -65,12 +68,11 @@ const Content = ({ ...props }: DrawerContentComponentProps) => {
             </Text>
           )}
           {isLoading || !currentUser ? (
-            <View className="w-24 h-4 rounded bg-gray-200" />
+            <View className="w-24 h-4 rounded " />
           ) : (
-            <Text className="text-lg font-semibold">
+            <Text className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
               {currentUser.followersCount || 0}{" "}
               <Text className="text-base text-gray-500 font-semibold">
-                {" "}
                 Followers
               </Text>
             </Text>
@@ -81,9 +83,13 @@ const Content = ({ ...props }: DrawerContentComponentProps) => {
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
 
-      <View className="ml-6 ">
-        <Feather name="sun" size={24} color="purple" />
-      </View>
+      <TouchableOpacity className="ml-6" onPress={toggleTheme}>
+        <Feather 
+          name={theme === 'dark' ? 'sun' : 'moon'} 
+          size={24} 
+          color={theme === 'dark' ? '#ffffff' : '#6b21a8'} 
+        />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
