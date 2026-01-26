@@ -2,7 +2,7 @@ import { View, Text, Alert, Image, TouchableOpacity } from "react-native";
 import React, { useMemo, useState } from "react";
 import { Post, User } from "@/types";
 import { formatDate, formatNumber } from "@/utils/formatters";
-import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
+import { AntDesign, Entypo, Feather, FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRepost } from "@/hooks/useReposts";
 import QuoteModal from "./QuoteModal";
@@ -16,7 +16,7 @@ interface PostCardProps {
   onComment: (post: Post) => void;
   isLiked?: boolean;
   currentUser: User;
-  isBookmarked?: boolean;
+  onSettingsPress: (postId: string) => void;
 }
 
 const PostCard = ({
@@ -26,7 +26,7 @@ const PostCard = ({
   isLiked,
   currentUser,
   onComment,
-  isBookmarked,
+  onSettingsPress,
 }: PostCardProps) => {
   const displayPost =
     post.isRepost && post.originalPost ? post.originalPost : post;
@@ -75,19 +75,7 @@ const PostCard = ({
 
   const router = useRouter();
 
-  const handleDelete = () => {
-    Alert.alert("Delete post", "Are you sure you want to delete this post?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => onDelete(post._id),
-      },
-    ]);
-  };
+
 
   const handleProfilePress = () => {
     if (isOwnPost) {
@@ -150,7 +138,9 @@ const PostCard = ({
               onPress={handleProfilePress}
               className="flex-row items-center"
             >
-              <Text className={`font-bold  mr-1 ${theme === "dark" ? "text-gray-200 " : "text-gray-500"}`}>
+              <Text
+                className={`font-bold  mr-1 ${theme === "dark" ? "text-gray-200 " : "text-gray-500"}`}
+              >
                 {displayPost.user.firstName} {displayPost.user.lastName}
               </Text>
 
@@ -160,15 +150,21 @@ const PostCard = ({
               </Text>
             </TouchableOpacity>
 
-            {isOwnPost && (
-              <TouchableOpacity onPress={handleDelete}>
-                <Feather name="trash" size={20} color={"#657786"} />
-              </TouchableOpacity>
-            )}
+
+
+            <TouchableOpacity onPress={() => onSettingsPress(post._id)} className="w-8 ">
+              <Entypo
+                name="dots-three-vertical"
+                size={14}
+                color={`${theme === "dark" ? "white" : "black"}`}
+              />
+            </TouchableOpacity>
           </View>
 
           {displayPost.content && (
-            <Text className={` text-base leading-5 mb-3 ${theme === "dark" ? "text-gray-300 " : "text-gray-500"}`}>
+            <Text
+              className={` text-base leading-5 mb-3 ${theme === "dark" ? "text-gray-300 " : "text-gray-500"}`}
+            >
               {displayPost.content.split(/(#\w+)/g).map((part, index) =>
                 part.startsWith("#") ? (
                   <Text
