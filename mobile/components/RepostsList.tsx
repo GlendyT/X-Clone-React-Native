@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUserReposts } from "@/hooks/useReposts";
 import { usePosts } from "@/hooks/usePosts";
@@ -7,19 +7,31 @@ import { Post } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
+import SettingsPost from "./SettingsPost";
 import { useTheme } from "@/hooks/useThemeContext";
+import { usePostInteraction } from "@/hooks/usePostInteraction";
 
 const RepostsList = ({ username }: { username: string }) => {
   const { currentUser } = useCurrentUser();
   const { theme } = useTheme();
   const { reposts, isLoading, error, refetch } = useUserReposts(username);
   const { toggleLike, deletePost, checkIsLiked } = usePosts();
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
-  const selectedPost = selectedPostId
-    ? reposts.find((p: Post) => p.originalPost?._id === selectedPostId)
-        ?.originalPost
-    : null;
+  const originalPosts = useMemo(
+    () =>
+      reposts
+        .map((repost: Post) => repost.originalPost)
+        .filter((post: Post): post is Post => !!post),
+    [reposts],
+  );
+  const {
+    postForComments,
+    postForSettings,
+    handleCommentPress,
+    handleSettingsPress,
+    closeCommentsModal,
+    closeSettingsModal,
+  } = usePostInteraction(originalPosts);
 
   if (isLoading) {
     return (
@@ -84,8 +96,9 @@ const RepostsList = ({ username }: { username: string }) => {
                   post={originalPost}
                   onLike={toggleLike}
                   onDelete={deletePost}
-                  onComment={(post: Post) => setSelectedPostId(post._id)}
+                  onComment={handleCommentPress}
                   currentUser={currentUser}
+                  onSettingsPress={handleSettingsPress}
                   isLiked={checkIsLiked(originalPost.likes, currentUser)}
                 />
               </>
@@ -95,9 +108,18 @@ const RepostsList = ({ username }: { username: string }) => {
       })}
 
       <CommentsModal
-        selectedPost={selectedPost}
-        onClose={() => setSelectedPostId(null)}
+        selectedPost={postForComments}
+        onClose={closeCommentsModal}
       />
+
+      {postForSettings && (
+        <SettingsPost
+          onClose={closeSettingsModal}
+          post={postForSettings}
+          onDelete={deletePost}
+          currentUser={currentUser}
+        />
+      )}
     </>
   );
 };

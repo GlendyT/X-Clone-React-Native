@@ -6,26 +6,28 @@ import { usePosts } from "@/hooks/usePosts";
 import { Post } from "@/types";
 import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
+import SettingsPost from "./SettingsPost";
+import { usePostInteraction } from "@/hooks/usePostInteraction";
 
 interface LikesListProps {
   username: string;
 }
 
 const LikesList = ({ username }: LikesListProps) => {
-  const {
-    data: likedPosts,
-    isLoading,
-    error,
-  } = useLikedPosts(username);
+  const { data: likedPosts, isLoading, error } = useLikedPosts(username);
   const { currentUser } = useCurrentUser();
   const { toggleLike, deletePost, checkIsLiked } = usePosts();
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
-  const selectedPost = selectedPostId
-    ? likedPosts.find((p: Post) => p._id === selectedPostId)
-    : null;
+  const {
+    postForComments,
+    postForSettings,
+    handleCommentPress,
+    handleSettingsPress,
+    closeCommentsModal,
+    closeSettingsModal,
+  } = usePostInteraction(likedPosts || []);
 
-  if (isLoading ) {
+  if (isLoading) {
     return (
       <View className="p-8 items-center">
         <ActivityIndicator size={"large"} color={"#1DA1F2"} />
@@ -59,16 +61,26 @@ const LikesList = ({ username }: LikesListProps) => {
           post={post}
           onLike={toggleLike}
           onDelete={deletePost}
-          onComment={(post: Post) => setSelectedPostId(post._id)}
+          onComment={handleCommentPress}
+          onSettingsPress={handleSettingsPress}
           currentUser={currentUser}
           isLiked={checkIsLiked(post.likes, currentUser)}
         />
       ))}
 
       <CommentsModal
-        selectedPost={selectedPost}
-        onClose={() => setSelectedPostId(null)}
+        selectedPost={postForComments}
+        onClose={closeCommentsModal}
       />
+
+      {postForSettings && (
+        <SettingsPost
+          onClose={closeSettingsModal}
+          post={postForSettings}
+          onDelete={deletePost}
+          currentUser={currentUser}
+        />
+      )}
     </>
   );
 };
