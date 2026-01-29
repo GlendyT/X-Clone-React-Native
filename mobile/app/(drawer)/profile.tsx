@@ -13,12 +13,14 @@ import LikesList from "@/components/LikesList";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import BookmarksList from "@/components/BookmarksList";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const ProfileScreen = () => {
   const { currentUser, isLoading } = useCurrentUser();
-  const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes" | "bookmarks">(
-    "posts",
-  );
+
+  const [activeTab, setActiveTab] = useState<
+    "posts" | "reposts" | "likes" | "bookmarks"
+  >("posts");
 
   const { refetch: refetchPosts, isLoading: isRefetching } = usePosts(
     currentUser?.username || "",
@@ -38,6 +40,7 @@ const ProfileScreen = () => {
 
   const { refetch: refetchReposts } = useUserReposts(currentUser?.username);
   const router = useRouter();
+  const { theme } = useTheme();
 
   if (isLoading) {
     return (
@@ -66,7 +69,7 @@ const ProfileScreen = () => {
       }}
       headerLeft={
         <TouchableOpacity onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color={"black"} />
+          <Feather name="arrow-left" size={24} color={"gray"} />
         </TouchableOpacity>
       }
       headerRight={<SignOutButton />}
@@ -75,7 +78,11 @@ const ProfileScreen = () => {
           className="border border-gray-300 px-6 py-2 rounded-full"
           onPress={openEditModal}
         >
-          <Text className="font-semibold text-gray-900 ">Edit profile</Text>
+          <Text
+            className={`font-semibold ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+          >
+            Edit profile
+          </Text>
         </TouchableOpacity>
       }
       canEdit={true}

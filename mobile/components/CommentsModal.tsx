@@ -13,6 +13,7 @@ import { Post } from "@/types";
 import { useComments } from "@/hooks/useComments";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import CommentItem from "./CommentItem";
+import { useTheme } from "@/hooks/useThemeContext";
 
 interface CommentsModalProps {
   selectedPost: Post | null;
@@ -31,6 +32,7 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
     isCreatingReply,
   } = useComments();
   const { currentUser } = useCurrentUser();
+  const { theme } = useTheme();
 
   const handleClose = () => {
     onClose();
@@ -48,7 +50,9 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
       presentationStyle="pageSheet"
     >
       {/*MODAL HEADER */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+      <View
+        className={`flex-row items-center justify-between px-4 py-3 border-b  ${theme === "dark" ? "bg-black border-gray-800" : "bg-white border-gray-100"}`}
+      >
         <TouchableOpacity onPress={handleClose}>
           <Text className="text-blue-500 text-lg"> close</Text>
         </TouchableOpacity>
@@ -58,8 +62,10 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
       </View>
 
       {selectedPost && (
-        <ScrollView className="flex-1">
-          <View className="border-b border-gray-100 bg-white p-4">
+        <ScrollView
+          className={`flex-1 ${theme === "dark" ? "bg-black" : "bg-white"}`}
+        >
+          <View className={`border-b border-gray-100  p-4`}>
             <View className="flex-row">
               <Image
                 source={{ uri: selectedPost.user.profilePicture }}
@@ -68,7 +74,9 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
 
               <View className="flex-1">
                 <View className="flex-row items-center mb-1">
-                  <Text className="font-bold text-gray-900 mr-1">
+                  <Text
+                    className={`font-bold  mr-1 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                  >
                     {selectedPost.user.firstName} {selectedPost.user.lastName}
                   </Text>
                   <Text className="text-gray-500 ml-1">
@@ -77,7 +85,9 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
                 </View>
 
                 {selectedPost.content && (
-                  <Text className="text-gray-900 text-base leading-5 mb-3">
+                  <Text
+                    className={`${theme === "dark" ? "text-gray-300" : "text-gray-900"} text-base leading-5 mb-3`}
+                  >
                     {selectedPost.content}
                   </Text>
                 )}
@@ -111,7 +121,7 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
           })}
 
           {/*ADD COMMENT INPUT */}
-          <View className="p-4 border-t border-gray-100">
+          <View className={`p-4 border-t ${theme === "dark" ? "border-gray-950" : "border-gray-100"}`}>
             <View className="flex-row">
               <Image
                 source={{ uri: currentUser?.profilePicture || "" }}
@@ -120,13 +130,14 @@ const CommentsModal = ({ selectedPost, onClose }: CommentsModalProps) => {
 
               <View className="flex-1">
                 <TextInput
-                  className="border border-gray-200 rounded-lg p-3 text-balance mb-3"
+                  className="border border-gray-400 rounded-lg p-3 text-balance mb-3"
                   placeholder="Write a comment..."
                   value={commentText}
                   onChangeText={setCommentText}
                   multiline
                   numberOfLines={3}
                   textAlignVertical="top"
+                  placeholderTextColor={"#657786"}
                 />
 
                 <TouchableOpacity

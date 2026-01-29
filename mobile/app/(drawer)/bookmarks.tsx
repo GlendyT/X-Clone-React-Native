@@ -6,18 +6,26 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import BookmarksList from "@/components/BookmarksList";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const Bookmarks = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
+  const { theme } = useTheme();
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView
+      className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+    >
       <View className=" flex-row justify-between items-center px-4 py-3 border-b border-gray-100">
         <TouchableOpacity onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color={"black"} />
+          <Feather name="arrow-left" size={24} color={"gray"} />
         </TouchableOpacity>
 
-        <Text className="text-xl font-bold text-gray-900">Bookmarks</Text>
+        <Text
+          className={`text-xl font-bold ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+        >
+          Bookmarks
+        </Text>
         <Feather name="bookmark" size={20} color={"#657786"} />
       </View>
 

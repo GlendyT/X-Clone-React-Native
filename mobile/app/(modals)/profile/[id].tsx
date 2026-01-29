@@ -33,9 +33,9 @@ const UserProfile = () => {
   const { mutate: followUser, isPending: isFollowPending } = useFollow();
 
   const { refetch: refetchPosts } = usePosts(user?.username || "");
-  const [activeTab, setActiveTab] = useState<"posts" | "reposts" | "likes">(
-    "posts"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "posts" | "reposts" | "likes" | "bookmarks"
+  >("posts");
   const { isCreatingConversation } = useConversations();
 
   const handleMessageUser = () => {
@@ -74,7 +74,7 @@ const UserProfile = () => {
       }}
       headerLeft={
         <TouchableOpacity onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color={"black"} />
+          <Feather name="arrow-left" size={24} color={"gray"} />
         </TouchableOpacity>
       }
       actionButton={

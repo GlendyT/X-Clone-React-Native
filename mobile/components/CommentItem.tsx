@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useThemeContext";
 
 interface CommentItemProps {
   comment: Comment;
@@ -32,6 +33,7 @@ const CommentItem = ({
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [showReplies, setShowReplies] = useState(false);
+  const { theme } = useTheme();
 
   if (!currentUser) {
     return null;
@@ -46,7 +48,7 @@ const CommentItem = ({
   };
 
   return (
-    <View className="border-b border-gray-100 bg-white">
+    <View className={`border-b ${theme === "dark" ? "bg-black" : "bg-white"}`}>
       {/*Comentario principal */}
       <View className="p-4">
         <View className="flex-row">

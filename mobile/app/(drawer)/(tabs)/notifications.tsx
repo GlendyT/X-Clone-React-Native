@@ -17,6 +17,7 @@ import NoNotificationsFound from "@/components/NoNotificationsFound";
 import NotificationCard from "@/components/NotificationCard";
 import { Notification } from "@/types";
 import { useRouter } from "expo-router";
+import { useTheme } from "@/hooks/useThemeContext";
 
 const NotificationsScreen = () => {
   const {
@@ -28,6 +29,7 @@ const NotificationsScreen = () => {
     deleteNotification,
   } = useNotifications();
   const router = useRouter();
+  const { theme } = useTheme();
 
   const inset = useSafeAreaInsets();
 
@@ -43,13 +45,20 @@ const NotificationsScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView
+      className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
+      edges={["top"]}
+    >
       {/*HEADER */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-        <Text className="text-xl font-bold text-gray-900">Notifications</Text>
+        <Text
+          className={`text-xl font-bold ${theme === "dark" ? "text-gray-200" : "text-gray-900"} `}
+        >
+          Notifications
+        </Text>
         <TouchableOpacity
-         className="p-2"
-         onPress={() => router.push("/notifications/NotificationSettings")}
+          className="p-2"
+          onPress={() => router.push("/notifications/NotificationSettings")}
         >
           <Feather name="settings" size={24} color={"#657786"} />
         </TouchableOpacity>

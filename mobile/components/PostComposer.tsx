@@ -12,6 +12,7 @@ import { useCreatePost } from "@/hooks/useCreatePost";
 import { useUser } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useTheme } from "@/hooks/useThemeContext";
 
 interface PostComposerProps {
   onClose: () => void;
@@ -29,6 +30,7 @@ const PostComposer = ({ onClose }: PostComposerProps) => {
     createPost,
   } = useCreatePost();
   const { currentUser, isLoading } = useCurrentUser();
+  const { theme } = useTheme();
 
   const { user } = useUser();
 
@@ -39,7 +41,9 @@ const PostComposer = ({ onClose }: PostComposerProps) => {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="border-b border-gray-100 p-4 bg-white">
+      <View
+        className={` flex-1 p-4 ${theme === "dark" ? "bg-black" : "bg-white"}`}
+      >
         <View className="flex-row justify-between items-center mb-4">
           <TouchableOpacity onPress={onClose}>
             <Feather name="x" size={24} color="#657786" />
@@ -52,7 +56,9 @@ const PostComposer = ({ onClose }: PostComposerProps) => {
             <View className="w-12 h-12 rounded-full bg-gray-200 mr-3" />
           ) : (
             <Image
-              source={{ uri: currentUser.profilePicture || user?.imageUrl || "" }}
+              source={{
+                uri: currentUser.profilePicture || user?.imageUrl || "",
+              }}
               className="w-12 h-12 rounded-full mr-3"
             />
           )}
