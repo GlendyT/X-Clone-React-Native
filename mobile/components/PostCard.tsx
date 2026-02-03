@@ -116,7 +116,7 @@ const PostCard = ({
 
   return (
     <View
-      className={`border-b  ${theme === "dark" ? "bg-black border-gray-700 " : "bg-white border-gray-100"}`}
+      className={`border-b  ${theme === "dark" ? "bg-black border-gray-900 " : "bg-white border-gray-100"}`}
     >
       {/*Mostrar indicador de repost */}
 

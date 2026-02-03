@@ -4,6 +4,8 @@ import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@clerk/clerk-expo";
 import { useTheme } from "@/hooks/useThemeContext";
+import { StatusBar } from "expo-status-bar";
+
 
 const TabsLayout = () => {
   const { theme } = useTheme();
@@ -14,17 +16,23 @@ const TabsLayout = () => {
   if (!isSignedIn) return <Redirect href="/(auth)" />;
 
   return (
-    <Tabs
+    <>
+      <StatusBar style="light" backgroundColor="#000000" />
+      <Tabs
       screenOptions={{
         tabBarActiveTintColor: isDark ? "#ffffff" : "#1DA1F2",
         tabBarInactiveTintColor: isDark ? "#3a3d42" : "#6b7280",
         tabBarStyle: {
-          backgroundColor: isDark ? "#000000" : "#ffffff",
+          backgroundColor: isDark ? "#000000" : "#fffeff",
           height: 50 + insets.bottom,
+          position: "absolute",
+          borderTopWidth: 0,
           paddingTop: 8,
+          paddingBottom: insets.bottom
         },
         headerShown: false,
       }}
+      
     >
       <Tabs.Screen
         name="index"
@@ -65,6 +73,7 @@ const TabsLayout = () => {
         }}
       />
     </Tabs>
+    </>
   );
 };
 

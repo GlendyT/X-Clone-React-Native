@@ -48,7 +48,7 @@ const HomeScreen = () => {
     <SafeAreaView
       className={`flex-1 ${theme === "dark" ? "bg-black " : "bg-white "}`}
     >
-      <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-100">
+      <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-800 ">
         <TouchableOpacity onPress={openDrawer}>
           {isLoading || !currentUser ? (
             <View className="w-10 h-10 rounded-full " />
@@ -91,8 +91,8 @@ const HomeScreen = () => {
         <PostComposer onClose={() => setShowPostComposer(false)} />
       )}
       <TouchableOpacity
-        className="absolute bg-purple-800 rounded-full p-4 items-end-center justify-center"
-        style={{ bottom: 10, right: 20 }}
+        className=" absolute bg-purple-800 rounded-full p-4 items-end-center justify-center"
+        style={{ bottom: 100, right: 20 }}
         onPress={() => setShowPostComposer(true)}
       >
         <AntDesign name="plus" size={24} color="white" />

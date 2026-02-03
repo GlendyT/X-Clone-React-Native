@@ -43,9 +43,7 @@ const SearchScreen = () => {
       className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
     >
       {/*HEADER */}
-      <View
-        className={`px-4 py-3 border-b  ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
-      >
+      <View className={`px-4 py-3  border-b border-gray-800 `}>
         <View
           className={`flex-row items-center px-4 py-3 ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
         >
@@ -78,7 +76,9 @@ const SearchScreen = () => {
         }
       >
         <View className="p-4">
-          <Text className={`text-xl font-bold  mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-900"}`}>
+          <Text
+            className={`text-xl font-bold  mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-900"}`}
+          >
             {hasSearched && searchTerm
               ? `Results for "${searchTerm}"`
               : "Trends for you"}

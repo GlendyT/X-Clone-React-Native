@@ -50,7 +50,7 @@ const NotificationsScreen = () => {
       edges={["top"]}
     >
       {/*HEADER */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-800 ">
         <Text
           className={`text-xl font-bold ${theme === "dark" ? "text-gray-200" : "text-gray-900"} `}
         >
