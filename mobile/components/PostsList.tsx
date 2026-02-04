@@ -5,6 +5,7 @@ import { usePosts } from "@/hooks/usePosts";
 import { Post } from "@/types";
 import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
+import SettingsPost from "./SettingsPost";
 
 const PostsList = ({ username }: { username?: string }) => {
   const { currentUser } = useCurrentUser();
@@ -18,10 +19,10 @@ const PostsList = ({ username }: { username?: string }) => {
     checkIsLiked,
   } = usePosts(username);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [settingsPostId, setSettingsPostId] = useState<string | null>(null);
   const selectedPost = selectedPostId
     ? posts.find((p: Post) => p._id === selectedPostId)
     : null;
-
 
   if (isLoading) {
     return (
@@ -63,6 +64,7 @@ const PostsList = ({ username }: { username?: string }) => {
           onLike={toggleLike}
           onDelete={deletePost}
           onComment={(post: Post) => setSelectedPostId(post._id)}
+          onSettingsPress={(postId: string) => setSettingsPostId(postId)}
           currentUser={currentUser}
           isLiked={checkIsLiked(post.likes, currentUser)}
         />
@@ -72,6 +74,17 @@ const PostsList = ({ username }: { username?: string }) => {
         selectedPost={selectedPost}
         onClose={() => setSelectedPostId(null)}
       />
+
+      {settingsPostId &&
+        posts.map((post: Post) => (
+          <SettingsPost
+            key={post._id}
+            onClose={() => setSettingsPostId(null)}
+            post={post}
+            onDelete={deletePost}
+            currentUser={currentUser}
+          />
+        ))}
     </>
   );
 };
