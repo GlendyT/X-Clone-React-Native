@@ -6,6 +6,7 @@ import { Post } from "@/types";
 import PostCard from "./PostCard";
 import CommentsModal from "./CommentsModal";
 import SettingsPost from "./SettingsPost";
+import { usePostInteraction } from "@/hooks/usePostInteraction";
 
 const PostsList = ({ username }: { username?: string }) => {
   const { currentUser } = useCurrentUser();
@@ -18,11 +19,14 @@ const PostsList = ({ username }: { username?: string }) => {
     deletePost,
     checkIsLiked,
   } = usePosts(username);
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const [settingsPostId, setSettingsPostId] = useState<string | null>(null);
-  const selectedPost = selectedPostId
-    ? posts.find((p: Post) => p._id === selectedPostId)
-    : null;
+  const {
+    postForComments,
+    postForSettings,
+    handleCommentPress,
+    handleSettingsPress,
+    closeSettingsModal,
+    closeCommentsModal,
+  } = usePostInteraction(posts);
 
   if (isLoading) {
     return (
@@ -63,28 +67,26 @@ const PostsList = ({ username }: { username?: string }) => {
           post={post}
           onLike={toggleLike}
           onDelete={deletePost}
-          onComment={(post: Post) => setSelectedPostId(post._id)}
-          onSettingsPress={(postId: string) => setSettingsPostId(postId)}
+          onComment={handleCommentPress}
+          onSettingsPress={handleSettingsPress}
           currentUser={currentUser}
           isLiked={checkIsLiked(post.likes, currentUser)}
         />
       ))}
 
       <CommentsModal
-        selectedPost={selectedPost}
-        onClose={() => setSelectedPostId(null)}
+        selectedPost={postForComments}
+        onClose={closeCommentsModal}
       />
 
-      {settingsPostId &&
-        posts.map((post: Post) => (
-          <SettingsPost
-            key={post._id}
-            onClose={() => setSettingsPostId(null)}
-            post={post}
-            onDelete={deletePost}
-            currentUser={currentUser}
-          />
-        ))}
+      {postForSettings && (
+        <SettingsPost
+          onClose={closeSettingsModal}
+          post={postForSettings}
+          onDelete={deletePost}
+          currentUser={currentUser}
+        />
+      )}
     </>
   );
 };

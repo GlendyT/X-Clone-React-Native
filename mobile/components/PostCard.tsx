@@ -75,8 +75,6 @@ const PostCard = ({
 
   const router = useRouter();
 
-
-
   const handleProfilePress = () => {
     if (isOwnPost) {
       router.push("/(drawer)/profile");
@@ -150,9 +148,10 @@ const PostCard = ({
               </Text>
             </TouchableOpacity>
 
-
-
-            <TouchableOpacity onPress={() => onSettingsPress(post._id)} className="w-8 ">
+            <TouchableOpacity
+              onPress={() => onSettingsPress(post._id)}
+              className="w-8"
+            >
               <Entypo
                 name="dots-three-vertical"
                 size={14}
