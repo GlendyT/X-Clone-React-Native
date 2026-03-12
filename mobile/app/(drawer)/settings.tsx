@@ -57,7 +57,7 @@ const Settings = () => {
         >
           Settings
         </Text>
-        <Feather name="settings" size={20} color={"#657786"} />
+        <Feather  size={20} color={"#657786"} />
       </View>
       <View
         className={`flex flex-row items-center px-4 py-1 ${theme === "dark" ? "btg-gray-900 rounded-full" : "bg-gray-100"} `}
@@ -75,14 +75,14 @@ const Settings = () => {
       </View>
 
       {optionSettings.map((option) => (
-        <View className="flex-row px-4 justify-between py-3 " key={option.id}>
+        <TouchableOpacity className="flex-row px-4 justify-between py-3 " key={option.id}>
           <Text>{option.id} </Text>
           <MaterialIcons
             name="keyboard-arrow-right"
             size={24}
             color={"black"}
           />
-        </View>
+        </TouchableOpacity>
       ))}
     </SafeAreaView>
   );

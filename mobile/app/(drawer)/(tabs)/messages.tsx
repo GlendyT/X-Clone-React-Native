@@ -115,7 +115,7 @@ const MessagesScreen = () => {
         className={`px-4 py-3 border-b ${theme === "dark" ? "border-gray-600" : "border-gray-100"}`}
       >
         <View
-          className={`flex-row items-center  rounded-full px-4 py-3  ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
+          className={`flex-row items-center  rounded-full px-4 py-1  ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
         >
           <Feather name="search" size={20} color={"#657786"} />
           <TextInput
