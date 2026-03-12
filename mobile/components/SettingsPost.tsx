@@ -27,7 +27,7 @@ const SettingsPost = ({
   currentUser,
 }: SettingsPostProps) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["45%", "50%"], []);
+  const snapPoints = useMemo(() => ["35%", "50%"], []);
   const { theme } = useTheme();
   const displayPost =
     post.isRepost && post.originalPost ? post.originalPost : post;
@@ -78,72 +78,84 @@ const SettingsPost = ({
             Configuraciones
           </Text>
         </View>
+
+        
         <View className="flex-1 gap-4">
-          <TouchableOpacity className="flex-row items-center w-full gap-2 border-b border-gray-400 pb-3">
-            <Entypo name="emoji-sad" size={24} color="gray" />
+          {!isOwnPost ? (
+            <>
+              <TouchableOpacity className="flex-row items-center w-full gap-2 border-b border-gray-400 pb-3">
+                <Entypo name="emoji-sad" size={24} color="gray" />
 
-            <Text className="text-gray-400">Not interested in this post</Text>
-          </TouchableOpacity>
+                <Text className="text-gray-400">
+                  Not interested in this post
+                </Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center w-full gap-2">
-            <SimpleLineIcons name="user-follow" size={24} color="gray" />
-            <Text className="text-gray-400">Follow user</Text>
-          </TouchableOpacity>
+              <TouchableOpacity className="flex-row items-center w-full gap-2">
+                <SimpleLineIcons name="user-follow" size={24} color="gray" />
+                <Text className="text-gray-400">Follow user</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center w-full gap-2">
-            <MaterialIcons name="playlist-add" size={24} color="gray" />
-            <Text className="text-gray-400">Add/Remove from Lists</Text>
-          </TouchableOpacity>
+              <TouchableOpacity className="flex-row items-center w-full gap-2">
+                <MaterialIcons name="playlist-add" size={24} color="gray" />
+                <Text className="text-gray-400">Add/Remove from Lists</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center w-full gap-2">
-            <Octicons name="mute" size={24} color="gray" />
-            <Text className="text-gray-400">Mute user</Text>
-          </TouchableOpacity>
+              <TouchableOpacity className="flex-row items-center w-full gap-2">
+                <Octicons name="mute" size={24} color="gray" />
+                <Text className="text-gray-400">Mute user</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center w-full gap-2">
-            <Entypo name="block" size={24} color="gray" />
-            <Text className="text-gray-400">Block usert</Text>
-          </TouchableOpacity>
+              <TouchableOpacity className="flex-row items-center w-full gap-2">
+                <Entypo name="block" size={24} color="gray" />
+                <Text className="text-gray-400">Block usert</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center w-full gap-2 border-b border-gray-400 pb-3">
-            <MaterialIcons name="report-gmailerrorred" size={24} color="gray" />
-            <Text className="text-gray-400">Report postt</Text>
-          </TouchableOpacity>
+              <TouchableOpacity className="flex-row items-center w-full gap-2 border-b border-gray-400 pb-3">
+                <MaterialIcons
+                  name="report-gmailerrorred"
+                  size={24}
+                  color="gray"
+                />
+                <Text className="text-gray-400">Report postt</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                onPress={handleDelete}
+                className="flex-row items-center w-full gap-2"
+              >
+                <Octicons name="pin" size={24} color="gray" />
+                <Text className="text-gray-400">Unpin from profilet</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDelete}
+                className="flex-row items-center w-full gap-2"
+              >
+                <Feather name="trash" size={20} color="#afa3a7" />
+                <Text className="text-gray-400">Delete post</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDelete}
+                className="flex-row items-center w-full gap-2"
+              >
+                <MaterialCommunityIcons
+                  name="message-reply-outline"
+                  size={24}
+                  color="gray"
+                />
+                <Text className="text-gray-400">Change who can reply</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
-        {isOwnPost && (
-          <View className="flex-1 gap-6">
-            <TouchableOpacity
-              onPress={handleDelete}
-              className="flex-row items-center w-full gap-2"
-            >
-              <Octicons name="pin" size={24} color="gray" />
-              <Text className="text-gray-400">Unpin from profilet</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={handleDelete}
-              className="flex-row items-center w-full gap-2"
-            >
-              <Feather name="trash" size={20} color="#afa3a7" />
-              <Text className="text-gray-400">Delete post</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleDelete}
-              className="flex-row items-center w-full gap-2"
-            >
-              <MaterialCommunityIcons
-                name="message-reply-outline"
-                size={24}
-                color="gray"
-              />
-              <Text className="text-gray-400">Change who can reply</Text>
-            </TouchableOpacity>
-          </View>
-        )}
         <TouchableOpacity
           onPress={handleDelete}
-          className="flex-row items-center w-full gap-2"
+          className="flex-row items-center w-full gap-2 pt-3"
         >
           <Ionicons name="megaphone-outline" size={24} color="gray" />
           <Text className="text-gray-400">Request Community Note</Text>
