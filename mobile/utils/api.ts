@@ -1,22 +1,61 @@
 import axios, { AxiosInstance } from "axios";
 import { useAuth } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
 
-// Physical Device with USB (adb reverse): Use localhost
-// Android Emulator: Use 10.0.2.2
-// iOS Simulator: Use localhost
-// When using adb reverse, localhost works on physical device via USB tunnel
-//const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://x-clone-react-native-ashy.vercel.app/api";
+const API_PORT = "5001";
 
-// Auto-detect based on platform - adjust for your setup
+type ExpoConstantsWithLegacyManifest = typeof Constants & {
+  manifest?: {
+    debuggerHost?: string;
+  };
+  manifest2?: {
+    extra?: {
+      expoClient?: {
+        hostUri?: string;
+      };
+    };
+  };
+};
+
+const normalizeApiBaseUrl = (value: string) => {
+  const trimmedValue = value.trim().replace(/\/$/, "");
+  return trimmedValue.endsWith("/api") ? trimmedValue : `${trimmedValue}/api`;
+};
+
+const getExpoHost = () => {
+  const constantsWithLegacyManifest =
+    Constants as ExpoConstantsWithLegacyManifest;
+  const hostUri =
+    Constants.expoConfig?.hostUri ??
+    constantsWithLegacyManifest.manifest2?.extra?.expoClient?.hostUri ??
+    constantsWithLegacyManifest.manifest?.debuggerHost;
+
+  if (!hostUri) {
+    return null;
+  }
+
+  return hostUri.replace(/^https?:\/\//, "").split(":")[0] ?? null;
+};
+
 const getApiUrl = () => {
-  // If you're using Android Emulator, uncomment this:
-  // if (Platform.OS === "android") return "http://10.0.2.2:5001/api";
+  const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-  // For iOS Simulator or physical device with adb reverse:
-  return "http://localhost:5001/api";
+  if (configuredApiUrl) {
+    return normalizeApiBaseUrl(configuredApiUrl);
+  }
+
+  const expoHost = getExpoHost();
+
+  if (expoHost) {
+    return `http://${expoHost}:${API_PORT}/api`;
+  }
+
+  return `http://localhost:${API_PORT}/api`;
 };
 
 const API_BASE_URL = getApiUrl();
+
+console.log("API base URL:", API_BASE_URL);
 
 // this will basically create an authenticated api, pass the token into our headers
 export const createApiClient = (

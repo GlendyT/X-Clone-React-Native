@@ -43,14 +43,14 @@ const SearchScreen = () => {
       className={`flex-1  ${theme === "dark" ? "bg-black" : "bg-white"}`}
     >
       {/*HEADER */}
-      <View className={`px-4 py-3  border-b border-gray-800 `}>
+      <View className={`px-4 py-3  `}>
         <View
-          className={`flex-row items-center px-4 py-3 ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
+          className={`flex-row items-center px-4 py-1 ${theme === "dark" ? "bg-gray-900 rounded-full" : "bg-gray-100"}`}
         >
           <Feather name="search" size={20} color={"#657786"} />
           <TextInput
             placeholder="Search X"
-            className="flex-1 ml-3 text-base"
+            className="flex-1 ml-3  text-base"
             placeholderTextColor={"#657786"}
             value={searchTerm}
             onChangeText={setSearchTerm}

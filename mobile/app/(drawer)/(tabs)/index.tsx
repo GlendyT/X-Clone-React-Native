@@ -46,7 +46,9 @@ const HomeScreen = () => {
     <SafeAreaView
       className={`flex-1 ${theme === "dark" ? "bg-black " : "bg-white "}`}
     >
-      <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-800 ">
+      <View
+        className={`flex-row justify-between items-center px-4 py-3 border-b ${theme === "dark" ? " border-gray-800 " : " border-gray-200 "} `}
+      >
         <TouchableOpacity onPress={openDrawer}>
           {isLoading || !currentUser ? (
             <View className="w-10 h-10 rounded-full " />
